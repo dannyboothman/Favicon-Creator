@@ -292,10 +292,18 @@ header{
     border-radius: 4px;
     display: block;
     position: absolute;
-    bottom: 25px;
+    bottom: 15px;
     max-height: 140px;
     overflow-y: auto;
-    /*display: none;*/
+    opacity: 0; 
+    visibility: hidden;
+    transition: all 0.4s ease;
+}
+
+#favicon_edit_font_awesome.favicon_edit_font_awesome_active{
+    bottom: 25px;
+    opacity: 1;
+    visibility: visible;
 }
 
 #favicon_edit_font_awesome li{

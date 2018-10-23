@@ -1,69 +1,3 @@
-
-/*getFontawesome();
-function getFontawesome(){
-
-    var fontAwesomeUrl = 'https://use.fontawesome.com/releases/v5.3.1/css/all.css';
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            var fontAwesome = this.responseText;
-
-            var res = fontAwesome.split('.');
-            
-            var fontAwesomeResult = new Array();
-            for (var i = 0; i < res.length; i++){
-                var newRes = res[i].substr(0, res[i].indexOf(':'));
-                if (newRes.substring(0, 2) == "fa"){
-                    if ((!newRes.match(/{/g)) && (!newRes.match(/,/g))){
-                        fontAwesomeResult.push(newRes);
-                    }
-                    
-                }
-            }
-
-            var fEditFontAwesome = document.getElementById("favicon_edit_font_awesome");
-            var fontAwesomeHtml = '';
-            for(var j = 0; j < fontAwesomeResult.length; j++){
-                fontAwesomeHtml += '<div class="font_awesome_item"><i class="fas '+fontAwesomeResult[j]+'" onerror="console.log('+fontAwesomeResult[j]+')"></i><span>'+fontAwesomeResult[j]+'</span></div>';
-            }
-
-            fEditFontAwesome.innerHTML = fontAwesomeHtml;
-
-
-        }
-    };
-    xhttp.open("GET", fontAwesomeUrl, true);
-    xhttp.send();
-
-}*/
-/*
-function getFontawesome(){
-    
-    var fontAwesomeUrl = '/fontAwesome/all.js';
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            var fontAwesome = this.responseText;
-
-            //console.log(fontAwesome);
-
-            var res = fontAwesome.split('var icons = {');
-            console.log(res)
-
-            
-            var res = fontAwesome.split('"').pop().split('":')[0];
-
-
-            console.log(res);
-
-
-        }
-    };
-    xhttp.open("GET", fontAwesomeUrl, true);
-    xhttp.send();
-
-}*/
-
 document.addEventListener('DOMContentLoaded', function() {
 
     /* Favicon Display */
@@ -201,6 +135,29 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+
+
+    /* Font Awesome */
+
+    var fontAwesomeButton = document.getElementById("favicon_edit_font_awesome_button");
+    var fontAwesomeContainer = document.getElementById("favicon_edit_font_awesome");
+
+    fontAwesomeButton.addEventListener("click", function(){
+        fontAwesomeContainer.classList.toggle("favicon_edit_font_awesome_active");
+    });
+
+    fontAwesomeContainer.addEventListener("click",function(e) {
+        if (e.target && e.target.matches("li")) {
+            var fontAwesomeSpan = e.target.querySelector("span");
+            console.log(fontAwesomeSpan.innerText);
+        }
+        if (e.target && e.target.matches("span")) {
+            console.log(e.target.innerText);
+        }
+        if (e.target && e.target.matches("i")) {
+            console.log(e.target.nextElementSibling.innerText);
+        }
+    });
 
 
     
