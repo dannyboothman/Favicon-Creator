@@ -275,10 +275,15 @@ header{
     border: 1px solid #ddd;
     border-radius: 4px;
     padding: 0px 10px;
-    line-height: 20px;
+    line-height: 25px;
     display: inline-block;
     margin-top: 10px;
     cursor: pointer;
+}
+
+#favicon_edit_font_awesome_button i{
+    margin-right: 5px;
+    color: #FE145B;
 }
 
 #favicon_edit_font_awesome_container{

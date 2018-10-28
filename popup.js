@@ -13,11 +13,13 @@ document.addEventListener('DOMContentLoaded', function() {
     fEditType1.addEventListener('click', function() {
         fEditType1Container.style.display = "block";
         fEditType2Container.style.display = "none";
+        chrome.storage.local.set({fontType: "1"});
     });
 
     fEditType2.addEventListener('click', function() {
         fEditType2Container.style.display = "block";
         fEditType1Container.style.display = "none";
+        chrome.storage.local.set({fontType: "2"});
     });
 
     /* End of Favicon Type Nav */
@@ -29,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var fEditTextValue;
     var fEditGoogleFontValue;
     var googleFontsMarkup;
+    var fEditFontAwesomeValue;
     /* End of Var value set */
 
     /* Var input set */
@@ -92,13 +95,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-    var resultsPage = document.getElementById("main_nav2");
+    // Unused code to change page - remove if sure not used
+    /*var resultsPage = document.getElementById("main_nav2");
     resultsPage.addEventListener("click", changePageResults);
     function changePageResults(){
         var faviconDiv = document.getElementById("favicon_display_container").innerHTML;
         faviconDiv = encodeURIComponent(faviconDiv);
         window.location.href = "result.html?favicon="+faviconDiv;
-    }
+    }*/
 
 
 
@@ -147,17 +151,28 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     fontAwesomeContainer.addEventListener("click",function(e) {
+        var fontAwesomeChange = false;
         if (e.target && e.target.matches("li")) {
             var fontAwesomeSpan = e.target.querySelector("span");
-            console.log(fontAwesomeSpan.innerText);
+            fEditFontAwesomeValue = fontAwesomeSpan.innerText;
+            selectFontAwesomeIcon(fEditFontAwesomeValue);
         }
         if (e.target && e.target.matches("span")) {
-            console.log(e.target.innerText);
+            fEditFontAwesomeValue = e.target.innerText;
+            selectFontAwesomeIcon(fEditFontAwesomeValue);
         }
         if (e.target && e.target.matches("i")) {
-            console.log(e.target.nextElementSibling.innerText);
+            fEditFontAwesomeValue = e.target.nextElementSibling.innerText;
+            selectFontAwesomeIcon(fEditFontAwesomeValue);
         }
     });
+
+    function selectFontAwesomeIcon(el){
+        chrome.storage.local.set({fontAwesome: el});
+        fontAwesomeContainer.classList.remove("favicon_edit_font_awesome_active");
+        fontAwesomeButton.innerHTML = "<i class='fa "+el+"'></i>" + el + " <i class='fa fa-caret-down'></i>";
+        getFavicon();
+    }
 
 
     
@@ -178,8 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
             fDisplay2 = document.getElementById("favicon_display_content");
         }
 
-        chrome.storage.local.get(['textColor', 'bgColor', 'fontSize', 'text', 'fontFamily'], function(result) {
-
+        chrome.storage.local.get(['fontType', 'textColor', 'bgColor', 'fontSize', 'text', 'fontFamily', 'fontAwesome'], function(result) {
 
             // Text Color
             if (result.textColor != undefined){
@@ -218,16 +232,47 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById("favicon_edit_font_size_text").innerHTML = "(" + fEditSizeValue + "px)";
 
 
-            // Text
-            if (result.text != undefined){
-                console.log("Text: " + result.text);
-                fEditTextValue = result.text;
+            // Font Type
+            if (result.fontType != undefined){
+                if (result.fontType == "2"){
+                    console.log("Font Awesome is Checked");
+                    addIcon();
+                } else {
+                    addText();
+                }
             } else {
-                console.log("Text NOT SET");
-                fEditTextValue = "F";
+                addText();
             }
-            fEditText.value = fEditTextValue;
-            fDisplay2.innerHTML = fEditTextValue;
+
+            function addText(){
+                // Text
+                if (result.text != undefined){
+                    console.log("Text: " + result.text);
+                    fEditTextValue = result.text;
+                } else {
+                    console.log("Text NOT SET");
+                    fEditTextValue = "F";
+                }
+                fEditText.value = fEditTextValue;
+                fDisplay2.innerHTML = fEditTextValue;
+            }
+
+            function addIcon(){
+                // Font Awesome
+                fEditType1Container.style.display = "none";
+                    fEditType2Container.style.display = "block";
+                    fEditType2.checked = true;
+
+                if (result.fontAwesome != undefined){
+                    console.log("Font Awesome: " + result.fontAwesome);
+                    fEditText = '<i class="fa '+result.fontAwesome+'"></i>';
+                } else {
+                    console.log("Font Awesome NOT SET");
+                    fEditText = '<i class="fa fa-thumbs-up"></i>';
+                }
+
+                fDisplay2.innerHTML = fEditText;
+            }
 
 
             // Font Family

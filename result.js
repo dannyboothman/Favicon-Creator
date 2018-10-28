@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fDisplay1 = document.getElementById("favicon_display");
         fDisplay2 = document.getElementById("favicon_display_content");
 
-        chrome.storage.local.get(['textColor', 'bgColor', 'fontSize', 'text', 'fontFamily'], function(result) {
+        chrome.storage.local.get(['fontType', 'textColor', 'bgColor', 'fontSize', 'text', 'fontFamily', 'fontAwesome'], function(result) {
 
 
             // Text Color
@@ -61,15 +61,41 @@ document.addEventListener('DOMContentLoaded', function() {
             fDisplay2.style.fontSize = fEditSizeValue + "px";
 
 
-            // Text
-            if (result.text != undefined){
-                console.log("Text: " + result.text);
-                fEditTextValue = result.text;
+            // Font Type
+            if (result.fontType != undefined){
+                if (result.fontType == "2"){
+                    console.log("Font Awesome is Checked");
+                    addIcon();
+                } else {
+                    addText();
+                }
             } else {
-                console.log("Text NOT SET");
-                fEditTextValue = "F";
+                addText();
             }
-            fDisplay2.innerHTML = fEditTextValue;
+
+            function addText(){
+                // Text
+                if (result.text != undefined){
+                    console.log("Text: " + result.text);
+                    fEditTextValue = result.text;
+                } else {
+                    console.log("Text NOT SET");
+                    fEditTextValue = "F";
+                }
+                fDisplay2.innerHTML = fEditTextValue;
+            }
+
+            function addIcon(){
+                // Font Awesome
+                if (result.fontAwesome != undefined){
+                    console.log("Font Awesome: " + result.fontAwesome);
+                    fEditText = '<i class="fa '+result.fontAwesome+'"></i>';
+                } else {
+                    console.log("Font Awesome NOT SET");
+                    fEditText = '<i class="fa fa-thumbs-up"></i>';
+                }
+                fDisplay2.innerHTML = fEditText;
+            }
 
 
             // Font Family
