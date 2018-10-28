@@ -346,7 +346,7 @@ header{
 
 /* Results Page */
 
-.favicon_download_button{
+#favicon_download_button{
     display: block;
     width: 100px;
     border-radius: 4px;
@@ -357,9 +357,10 @@ header{
     background-color: #FE145B;
     text-decoration: none;
     margin: 20px auto;
+    cursor: pointer;
 }
 
-.favicon_download_button:hover{
+#favicon_download_button:hover{
     background-color: #bb1245;
 }
 
