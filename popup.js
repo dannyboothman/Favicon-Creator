@@ -266,11 +266,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (result.fontAwesome != undefined){
                     console.log("Font Awesome: " + result.fontAwesome);
                     fEditText = '<i class="fa '+result.fontAwesome+'"></i>';
+                    fEditText2 = result.fontAwesome;
                 } else {
                     console.log("Font Awesome NOT SET");
                     fEditText = '<i class="fa fa-thumbs-up"></i>';
+                    fEditText2 = "fa-thumbs-up";
                 }
-
+                fontAwesomeButton.innerHTML = fEditText + fEditText2 + " <i class='fa fa-caret-down'></i>";
                 fDisplay2.innerHTML = fEditText;
             }
 
