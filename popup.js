@@ -14,12 +14,14 @@ document.addEventListener('DOMContentLoaded', function() {
         fEditType1Container.style.display = "block";
         fEditType2Container.style.display = "none";
         chrome.storage.local.set({fontType: "1"});
+        getFavicon();
     });
 
     fEditType2.addEventListener('click', function() {
         fEditType2Container.style.display = "block";
         fEditType1Container.style.display = "none";
         chrome.storage.local.set({fontType: "2"});
+        getFavicon();
     });
 
     /* End of Favicon Type Nav */

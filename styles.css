@@ -17,6 +17,15 @@ body{
     margin: 0 auto;
 }
 
+.link_primary{
+    font-weight: bold;
+    color: #FE145B;
+}
+
+.align_center{
+    text-align: center;
+}
+
 header{
     height: 30px;
     width: 100%;
@@ -102,6 +111,7 @@ header{
     border: 1px dashed #ddd;
     position: relative;
     text-align: center;
+    overflow: hidden;
 }
 
 .favicon_display_container_result #favicon_display{
@@ -389,7 +399,29 @@ pre > code {
 }
 
 
-/* Feedbak */
-#emf-logo{
-    display: none !important;
+/* Settings */
+
+.settings_section{
+    border-top: 1px dashed #ddd;
+}
+
+.settings_section:first-child{
+    border-top: none;
+}
+
+.settings_section ul{
+    padding-inline-start: 20px;
+}
+
+.settings_section ul li{
+    margin-bottom: 5px;
+}
+
+.settings_section ul li:last-child{
+    margin-bottom: 0;
+}
+
+#changelog_inner{
+    overflow-y: auto;
+    max-height: 200px;
 }
