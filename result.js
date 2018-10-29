@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (firstLoad == false){
             var zip = new JSZip();
             // Add an top-level, arbitrary text file with contents
-            zip.file("Hello.txt", "Hello World\n");
+            //zip.file("Hello.txt", "Hello World\n");
             // Generate a directory within the Zip file structure
             var img = zip.folder("images");
 
