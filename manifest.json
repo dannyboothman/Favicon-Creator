@@ -1,6 +1,6 @@
 {
     "name": "Favicon Creator", 
-    "version": "1.0.0.1",
+    "version": "1.0.0.2",
     "description": "Create a favicon for your website in seconds",
     "permissions": ["storage"],
     "browser_action": {
@@ -11,6 +11,12 @@
             "128": "images/icon/icon128.png"
         },
         "default_popup": "popup.html"
+    },
+    "icons": {
+        "16": "images/icon/icon16.png",
+        "32": "images/icon/icon32.png",
+        "48": "images/icon/icon64.png",
+        "128": "images/icon/icon128.png"
     },
     "manifest_version": 2
 }
