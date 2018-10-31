@@ -181,6 +181,10 @@ document.addEventListener('DOMContentLoaded', function() {
     var faviconCreated = false;
     function getFavicon(){
 
+        // Have to declare this here as well? Not sure why? 
+        //Is it because its declared and not visible if FontAwesome is displayed first
+        fEditText = document.getElementById("favicon_edit_text");
+
         if (faviconCreated === false){
             faviconCreated = true;
             
@@ -248,6 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             function addText(){
                 // Text
+                console.log("Should add text");
                 if (result.text != undefined){
                     console.log("Text: " + result.text);
                     fEditTextValue = result.text;
