@@ -94,7 +94,6 @@ header{
     font-size: 0.8em;
 }
 
-
 /* Favicon Display */
 
 #favicon_display_container{
@@ -401,23 +400,23 @@ pre > code {
 
 /* Settings */
 
-.settings_section{
+.text_section{
     border-top: 1px dashed #ddd;
 }
 
-.settings_section:first-child{
+.text_section:first-child{
     border-top: none;
 }
 
-.settings_section ul{
+.text_section ul{
     padding-inline-start: 20px;
 }
 
-.settings_section ul li{
+.text_section ul li{
     margin-bottom: 5px;
 }
 
-.settings_section ul li:last-child{
+.text_section ul li:last-child{
     margin-bottom: 0;
 }
 
