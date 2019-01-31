@@ -4,32 +4,50 @@
         <link rel="stylesheet" type="text/css" href="styles.css" />
         <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" />
+        <script src="script.js"></script>
+        <script src="settings.js"></script>
     </head>
     <body>
         <header>
             <a id="logo">
-                <img src="images/icon/icon32.png" />
-                <div class="logo_text"><span>Favicon</span><span>Creator</span></div></a>
+                <span>F</span><span>Favicon</span><span>Creator</span>
+            </a>
+            <i class="fa fa-moon-o" id="theme_toggle" aria-hidden="true"></i>
         </header>
         <nav id="main_nav">
             <a id="main_nav1" href="popup.html"><i class="fa fa-home" aria-hidden="true"></i><span>Home</span></a>
-            <a id="main_nav2" href="result.html"><i class="fa fa-star" aria-hidden="true"></i><span>Result</span></a>
-            <a id="main_nav3" href="help.html"><i class="fa fa-question-circle-o" aria-hidden="true"></i><span>Help</span></a>
+            <a id="main_nav2" href="result.html"><i class="fa fa-star" aria-hidden="true"></i><span>Download</span></a>
+            <!--<a id="main_nav3" href="help.html"><i class="fa fa-question-circle-o" aria-hidden="true"></i><span>Help</span></a>-->
             <a id="main_nav4" href="feedback.html"><i class="fa fa-commenting-o" aria-hidden="true"></i><span>Feedback</span></a>
             <a id="main_nav5" class="main_nav_active"><i class="fa fa-cog" aria-hidden="true"></i><span>Settings</span></a>
         </nav>
         <main>
             <div class="container">
                 <div class="text_section">
-                    <p><strong>Sorry</strong></p>
-                    <p>This page isn't quite ready yet.</p>
+                    <p><strong>Settings</strong></p>
+                    <p>Clear Local Storage: <a class="button button_inline" id="clearLocalStorage">Clear</a></p>
                 </div>
                 <div class="text_section">
-                    <p><strong>Settings Road Map</strong></p>
-                    <ul>
-                        <li>Ability to select what favicon sizes you want to download</li>
-                        <li>Enable/ Disable local storage</li>
-                    </ul>
+                    <p><strong>Buy Me a Coffee</strong></p>
+                    <p>If you like this Chrome Extension and fancy buying me a coffee, feel free to donate.</p>
+                    <form action="https://www.paypal.com/cgi-bin/webscr" target="_blank" method="post" style="margin-bottom: 10px;">
+
+                        <!-- Identify your business so that you can collect the payments. -->
+                        <input type="hidden" name="business" value="dbwebdevs@gmail.com">
+                    
+                        <!-- Specify a Donate button. -->
+                        <input type="hidden" name="cmd" value="_donations">
+                    
+                        <!-- Specify details about the contribution -->
+                        <input type="hidden" name="item_name" value="Buy Me a Coffee">
+                        <input type="hidden" name="item_number" value="Chrome Extension - Favicon Creator">
+                        <input type="hidden" name="currency_code" value="GBP">
+                    
+                        <!-- Display the payment button. -->
+                        <input type="image" name="submit" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" alt="Donate">
+                        <img alt="" width="1" height="1" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" >
+                    
+                    </form>
                 </div>
             </div>
         </main>
