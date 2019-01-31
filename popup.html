@@ -4,21 +4,23 @@
         <link rel="stylesheet" type="text/css" href="styles.css" />
         <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" />
         <link rel="stylesheet" id="googleFontStylesheet" />
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" />
         <script src="popup.js"></script>
+        <script src="script.js"></script>
+        <script src="html2canvas.js"></script>
     </head>
     <body>
         <header>
             <a id="logo">
-                <img src="images/icon/icon32.png" />
-                <div class="logo_text"><span>Favicon</span><span>Creator</span></div>
+                <span>F</span><span>Favicon</span><span>Creator</span>
             </a>
+            <i class="fa fa-moon-o" id="theme_toggle" aria-hidden="true"></i>
         </header>
         <nav id="main_nav">
             <a id="main_nav1" class="main_nav_active"><i class="fa fa-home" aria-hidden="true"></i><span>Home</span></a>
-            <a id="main_nav2" href="result.html"><i class="fa fa-star" aria-hidden="true"></i><span>Result</span></a>
-            <a id="main_nav3" href="help.html"><i class="fa fa-question" aria-hidden="true"></i><span>Help</span></a>
-            <a id="main_nav4" href="feedback.html"><i class="fa fa-comments" aria-hidden="true"></i><span>Feedback</span></a>
+            <a id="main_nav2" href="result.html"><i class="fa fa-star" aria-hidden="true"></i><span>Download</span></a>
+            <!--<a id="main_nav3" href="help.html"><i class="fa fa-question-circle-o" aria-hidden="true"></i><span>Help</span></a>-->
+            <a id="main_nav4" href="feedback.html"><i class="fa fa-commenting-o" aria-hidden="true"></i><span>Feedback</span></a>
             <a id="main_nav5" href="settings.html"><i class="fa fa-cog" aria-hidden="true"></i><span>Settings</span></a>
         </nav>
         <main>
@@ -28,57 +30,71 @@
             <div id="favicon_edit_container">
 
                 <div class="hide_overflow">
-                    <div class="input_container input_container_50">
-                        <div class="checkbox_container">
-                            <input type="radio" id="favicon_edit_type1" name="favicon_edit_type" checked="checked" />
-                            <label for="favicon_edit_type1"><span>Text</span></label>
-                        </div>
-                    </div>
-                    <div class="input_container input_container_50">
-                        <div class="checkbox_container">
-                            <input type="radio" id="favicon_edit_type2" name="favicon_edit_type" />
-                            <label for="favicon_edit_type2"><span>Font Awesome</span></label>
-                        </div>
-                    </div>
+                    <div id="favicon_tab1" class="favicon_tab favicon_tab_active">Text</div>
+                    <div id="favicon_tab2" class="favicon_tab">Background</div>
                 </div>
 
-                <div class="hide_overflow">
-                    <div class="input_container input_container_50">
-                        <label>Text Color</label>
-                        <input type="color" value="#FFFFFF" id="favicon_edit_text_color" />
-                    </div>
-                    <div class="input_container input_container_50">
-                        <label>Background Color</label>
-                        <input type="color" value="#FE145B" id="favicon_edit_bg_color" />
-                    </div>
-                </div>
 
-                <div class="hide_overflow">
-                    <div class="input_container">
-                        <label>Font Size <span id="favicon_edit_font_size_text">(30px)</span></label>
-                        <input type="range" min="10" max="50" value="30" id="favicon_edit_font_size" />
-                    </div>
-                </div>
+                <div id="favicon_edit_container1">
 
-                <div id="favion_edit_type_text">
                     <div class="hide_overflow">
                         <div class="input_container input_container_50">
-                            <label>Text</label>
-                            <input type="text" id="favicon_edit_text" />
+                            <div class="checkbox_container">
+                                <input type="radio" id="favicon_edit_type1" name="favicon_edit_type" checked="checked" />
+                                <label for="favicon_edit_type1"><span>Text</span></label>
+                            </div>
                         </div>
                         <div class="input_container input_container_50">
-                            <label>Font Family</label>
-                            <select id="favicon_edit_google_font">
-                                <option>Please Select</option>
-                            </select>
+                            <div class="checkbox_container">
+                                <input type="radio" id="favicon_edit_type2" name="favicon_edit_type" />
+                                <label for="favicon_edit_type2"><span>Font Awesome</span></label>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div id="favion_edit_type_fontawesome">
-                    <label>FontAwesome</label>
-                    <div id="favicon_edit_font_awesome_button">Please Select <i class="fa fa-caret-down" aria-hidden="true"></i></div>
-                    <div id="favicon_edit_font_awesome_container">
+                    <div class="hide_overflow">
+                        <div class="input_container input_container_50">
+                            <label>Text Color</label>
+                            <input type="color" value="#FFFFFF" id="favicon_edit_text_color" />
+                        </div>
+                        
+                        <div class="width_50">
+                            <div class="favicon_edit_label"><strong>Text Styles</strong></div>
+                            <div class="favicon_edit_text_style_container hide_overflow">
+                                <div class="favicon_edit_text_style_item" id="favicon_edit_text_style_item_bold">B</div>
+                                <div class="favicon_edit_text_style_item" id="favicon_edit_text_style_item_italic">I</div>
+                                <div class="favicon_edit_text_style_item" id="favicon_edit_text_style_item_underline">U</div>
+                                <div class="favicon_edit_text_style_item" id="favicon_edit_text_style_item_strike">S</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hide_overflow">
+                        <div class="input_container">
+                            <label>Font Size <span id="favicon_edit_font_size_text">(30px)</span></label>
+                            <input type="range" min="10" max="50" value="30" id="favicon_edit_font_size" />
+                        </div>
+                    </div>
+
+                    <div id="favion_edit_type_text">
+                        <div class="hide_overflow">
+                            <div class="input_container input_container_50">
+                                <label>Text</label>
+                                <input type="text" id="favicon_edit_text" />
+                            </div>
+                            <div class="input_container input_container_50">
+                                <label for="favicon_edit_google_font">Font Family</label>
+                                <select id="favicon_edit_google_font">
+                                    <option>Please Select</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="favion_edit_type_fontawesome">
+                        <label>FontAwesome</label>
+                        <div id="favicon_edit_font_awesome_button">Please Select <i class="fa fa-caret-down" aria-hidden="true"></i></div>
+                        <div id="favicon_edit_font_awesome_container">
                         <div id="favicon_edit_font_awesome">
                             <li><i class="fa fa-glass"></i> <span>fa-glass</span></li>
                             <li><i class="fa fa-music"></i> <span>fa-music</span></li>
@@ -667,6 +683,52 @@
                             <li><i class="fa fa-fonticons"></i> <span>fa-fonticons</span></li>
                         </div>
                     </div>
+            
+            
+            
+                </div>
+
+                </div>
+
+                <div id="favicon_edit_container2">
+                    
+                    <div class="hide_overflow">
+                        <div class="input_container input_container_50">
+                            <label>Background Color</label>
+                            <input type="color" value="#FE145B" id="favicon_edit_bg_color" />
+                        </div>
+                        <div class="width_50">
+                            <div class="input_container">
+                                <label>Radius <span id="favicon_edit_border_radius_text">(0%)</span></label>
+                                <input type="range" min="0" max="50" value="0" id="favicon_edit_border_radius" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hide_overflow margint10">
+                        <div class="width_50">
+                            <div class="marginb5"><strong>Border</strong></div>
+                            <div id="favicon_edit_border">
+                                <div id="favicon_edit_border1" class="favicon_edit_border_item">Enabled</div>
+                                <div id="favicon_edit_border2" class="favicon_edit_border_item favicon_edit_border_item_active">Disabled</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="favicon_edit_border_container">
+                        <div class="hide_overflow">
+                            <div class="input_container input_container_50">
+                                <label>Border Color</label>
+                                <input type="color" value="#000000" id="favicon_edit_border_color" />
+                            </div>
+                            <div class="input_container input_container_50">
+                                <label>Border Width <span id="favicon_edit_border_width_text">(1px)</span></label>
+                                <input type="range" min="1" max="10" value="1" id="favicon_edit_border_width" />
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
 
             </div>

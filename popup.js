@@ -1,5 +1,27 @@
 document.addEventListener('DOMContentLoaded', function() {
 
+    /* Favicon Tabs */
+    var fEditTab1 = document.getElementById("favicon_tab1");
+    var fEditTab2 = document.getElementById("favicon_tab2");
+    var fEditTabContainer1 = document.getElementById("favicon_edit_container1");
+    var fEditTabContainer2 = document.getElementById("favicon_edit_container2");
+
+    fEditTab1.addEventListener('click', function() {
+        fEditTab1.classList.add("favicon_tab_active");
+        fEditTab2.classList.remove("favicon_tab_active");
+        fEditTabContainer1.style.display = "block";
+        fEditTabContainer2.style.display = "none";
+        chrome.storage.local.set({tab: "1"});
+    });
+
+    fEditTab2.addEventListener('click', function() {
+        fEditTab2.classList.add("favicon_tab_active");
+        fEditTab1.classList.remove("favicon_tab_active");
+        fEditTabContainer2.style.display = "block";
+        fEditTabContainer1.style.display = "none";
+        chrome.storage.local.set({tab: "2"});
+    });
+
     /* Favicon Display */
     var fDisplay1;
     var fDisplay2;
@@ -14,6 +36,12 @@ document.addEventListener('DOMContentLoaded', function() {
         fEditType1Container.style.display = "block";
         fEditType2Container.style.display = "none";
         chrome.storage.local.set({fontType: "1"});
+
+        var textStyleItems = document.querySelectorAll(".favicon_edit_text_style_item");
+        for(var i = 0; i < textStyleItems.length; i++){
+            textStyleItems[i].classList.remove("favicon_edit_text_style_item_disabled");
+        }
+
         getFavicon();
     });
 
@@ -21,6 +49,12 @@ document.addEventListener('DOMContentLoaded', function() {
         fEditType2Container.style.display = "block";
         fEditType1Container.style.display = "none";
         chrome.storage.local.set({fontType: "2"});
+
+        var textStyleItems = document.querySelectorAll(".favicon_edit_text_style_item");
+        for(var i = 0; i < textStyleItems.length; i++){
+            textStyleItems[i].classList.add("favicon_edit_text_style_item_disabled");
+        }
+
         getFavicon();
     });
 
@@ -30,6 +64,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var fEditTextColorValue;
     var fEditBgColorValue;
     var fEditSizeValue;
+    var fEditBorderRadiusValue;
+    var fEditBorderWidthValue;
     var fEditTextValue;
     var fEditGoogleFontValue;
     var googleFontsMarkup;
@@ -40,8 +76,19 @@ document.addEventListener('DOMContentLoaded', function() {
     var fEditTextColor = document.getElementById("favicon_edit_text_color");
     var fEditBgColor = document.getElementById("favicon_edit_bg_color");
     var fEditSize = document.getElementById("favicon_edit_font_size");
+    var fEditBorderRadius = document.getElementById("favicon_edit_border_radius");
     var fEditText = document.getElementById("favicon_edit_text");
+    var fEditTextStyle1 = document.getElementById("favicon_edit_text_style_item_bold");
+    var fEditTextStyle2 = document.getElementById("favicon_edit_text_style_item_italic");
+    var fEditTextStyle3 = document.getElementById("favicon_edit_text_style_item_underline");
+    var fEditTextStyle4 = document.getElementById("favicon_edit_text_style_item_strike");
     var fEditGoogleFont = document.getElementById("favicon_edit_google_font");
+    var fEditBorderContainer = document.getElementById("favicon_edit_border_container");
+    var fEditBorderEnabled = document.getElementById("favicon_edit_border1");
+    var fEditBorderDisabled = document.getElementById("favicon_edit_border2");
+    var fEditBorderColor = document.getElementById("favicon_edit_border_color");
+    var fEditBorderWidth = document.getElementById("favicon_edit_border_width");
+    var fEditBorderWidthText = document.getElementById("favicon_edit_border_width_text");
     /* End of Var input set  */
     
 
@@ -72,7 +119,19 @@ document.addEventListener('DOMContentLoaded', function() {
         chrome.storage.local.set({fontSize: fEditSizeValue});
         getFavicon();
     }
-    /* End of Font Size */   
+    /* End of Font Size */  
+    
+    
+    /* Border Radius */
+    fEditBorderRadius.addEventListener("input", fChangeBorderRadius);
+    function fChangeBorderRadius(){
+        console.log("Does this run")
+        fEditBorderRadiusValue = document.getElementById("favicon_edit_border_radius").value;
+        console.log(fEditBorderRadiusValue)
+        chrome.storage.local.set({borderRadius: fEditBorderRadiusValue});
+        getFavicon();
+    }
+    /* End of Border Radius */  
 
 
     /* Text */
@@ -85,6 +144,58 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     /* End of Text */   
 
+    /* Text Style: Bold */
+    fEditTextStyle1.addEventListener('click', function() {
+        fEditTextStyle1.classList.toggle("favicon_edit_text_style_item_selected");
+        if (fEditTextStyle1.classList.contains("favicon_edit_text_style_item_selected")){
+            chrome.storage.local.set({textStyle1: true});
+        } else {
+            chrome.storage.local.set({textStyle1: false});
+        }
+        getFavicon();
+    });
+    /* End Text Style: Bold */
+
+    /* Text Style: Italic */
+    fEditTextStyle2.addEventListener('click', function() {
+        fEditTextStyle2.classList.toggle("favicon_edit_text_style_item_selected");
+        if (fEditTextStyle2.classList.contains("favicon_edit_text_style_item_selected")){
+            chrome.storage.local.set({textStyle2: true});
+        } else {
+            chrome.storage.local.set({textStyle2: false});
+        }
+        getFavicon();
+    });
+    /* End Text Style: Italic */
+
+    /* Text Style: Underline */
+    fEditTextStyle3.addEventListener('click', function() {
+        fEditTextStyle3.classList.toggle("favicon_edit_text_style_item_selected");
+        if (fEditTextStyle3.classList.contains("favicon_edit_text_style_item_selected")){
+            chrome.storage.local.set({textStyle3: true});
+            chrome.storage.local.set({textStyle4: false})
+            fEditTextStyle4.classList.remove("favicon_edit_text_style_item_selected");
+        } else {
+            chrome.storage.local.set({textStyle3: false});
+        }
+        getFavicon();
+    });
+    /* End Text Style: Underline */
+
+    /* Text Style: Strike */
+    fEditTextStyle4.addEventListener('click', function() {
+        fEditTextStyle4.classList.toggle("favicon_edit_text_style_item_selected");
+        if (fEditTextStyle4.classList.contains("favicon_edit_text_style_item_selected")){
+            chrome.storage.local.set({textStyle4: true});
+            chrome.storage.local.set({textStyle3: false});
+            fEditTextStyle3.classList.remove("favicon_edit_text_style_item_selected");
+        } else {
+            chrome.storage.local.set({textStyle4: false});
+        }
+        getFavicon();
+    });
+    /* End Text Style: Strike */
+
 
     /* Google Fonts */
     fEditGoogleFont.addEventListener("change", fChangeGoogleFont);    
@@ -95,32 +206,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     /* End of Google Fonts */
 
-
-
-    // Unused code to change page - remove if sure not used
-    /*var resultsPage = document.getElementById("main_nav2");
-    resultsPage.addEventListener("click", changePageResults);
-    function changePageResults(){
-        var faviconDiv = document.getElementById("favicon_display_container").innerHTML;
-        faviconDiv = encodeURIComponent(faviconDiv);
-        window.location.href = "result.html?favicon="+faviconDiv;
-    }*/
-
-
-
-
-
     /* Google Fonts */
 
     var googleFontsUrl = 'https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBjoLHzfKeMU31kCbFXE7XrmrwzMWypxTE&sort=popularity';
     
     chrome.storage.local.get(['googleFonts'], function(result) {
         if (result.googleFonts != undefined){
-            console.log("Has google fonts")
+            //console.log("Has google fonts")
             fEditGoogleFont.innerHTML = result.googleFonts;
             getFavicon();
         } else {
-            console.log("Get Google Fonts");
+            //console.log("Get Google Fonts");
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
@@ -171,11 +267,56 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function selectFontAwesomeIcon(el){
         chrome.storage.local.set({fontAwesome: el});
-        fontAwesomeContainer.classList.remove("favicon_edit_font_awesome_active");
+        setTimeout(function(){
+            fontAwesomeContainer.classList.remove("favicon_edit_font_awesome_active");
+        }, 150);
         fontAwesomeButton.innerHTML = "<i class='fa "+el+"'></i>" + el + " <i class='fa fa-caret-down'></i>";
         getFavicon();
     }
 
+    document.addEventListener('click', function(event) {
+        var isClickInsideContainer = fontAwesomeContainer.contains(event.target);
+        var isClickInsideButton = fontAwesomeButton.contains(event.target);
+        if (isClickInsideContainer || isClickInsideButton) {
+            fontAwesomeContainer.classList.add("favicon_edit_font_awesome_active");
+        }
+        else {
+            fontAwesomeContainer.classList.remove("favicon_edit_font_awesome_active");
+        }
+    });
+
+
+    
+    fEditBorderEnabled.addEventListener("click", fChangeBorder1);    
+    function fChangeBorder1(){
+        fEditBorderEnabled.classList.add("favicon_edit_border_item_active");
+        fEditBorderDisabled.classList.remove("favicon_edit_border_item_active");
+        chrome.storage.local.set({border: "1"});
+        fEditBorderContainer.style.display = "block";
+        getFavicon();
+    }
+
+    fEditBorderDisabled.addEventListener("click", fChangeBorder2);    
+    function fChangeBorder2(){
+        fEditBorderEnabled.classList.remove("favicon_edit_border_item_active");
+        fEditBorderDisabled.classList.add("favicon_edit_border_item_active");
+        chrome.storage.local.set({border: "2"});
+        fEditBorderContainer.style.display = "none";
+        getFavicon();
+    }
+
+    fEditBorderColor.addEventListener("change", fChangeBorderColor);
+    function fChangeBorderColor(){
+        chrome.storage.local.set({borderColor: document.getElementById("favicon_edit_border_color").value});
+        getFavicon();
+    }
+
+    fEditBorderWidth.addEventListener("input", fChangeBorderWidth);
+    function fChangeBorderWidth(){
+        fEditBorderWidthValue = document.getElementById("favicon_edit_border_width").value;
+        chrome.storage.local.set({borderWidth: fEditBorderWidthValue});
+        getFavicon();
+    }
 
     
     var faviconCreated = false;
@@ -199,38 +340,98 @@ document.addEventListener('DOMContentLoaded', function() {
             fDisplay2 = document.getElementById("favicon_display_content");
         }
 
-        chrome.storage.local.get(['fontType', 'textColor', 'bgColor', 'fontSize', 'text', 'fontFamily', 'fontAwesome'], function(result) {
+        chrome.storage.local.get(['fontType', 'textColor', 'bgColor', 'fontSize', 'borderRadius', 'text', 'textStyle1', 'textStyle2', 'textStyle3', 'textStyle4', 'fontFamily', 'fontAwesome', 'tab', 'border', 'borderColor', 'borderWidth'], function(result) {
+
+            // Tab
+            if (result.tab != undefined){
+                if (result.tab == "2"){
+                    fEditTab2.classList.add("favicon_tab_active");
+                    fEditTab1.classList.remove("favicon_tab_active");
+                    fEditTabContainer2.style.display = "block";
+                    fEditTabContainer1.style.display = "none";
+                }
+            }
 
             // Text Color
             if (result.textColor != undefined){
-                console.log("Text Color: " + result.textColor);
+                //console.log("Text Color: " + result.textColor);
                 fEditTextColorValue = result.textColor;
             } else {
-                console.log("Text Color NOT SET");
+                //console.log("Text Color NOT SET");
                 fEditTextColorValue = "#FFFFFF";
             }
             fEditTextColor.value = fEditTextColorValue;
             fDisplay2.style.color = fEditTextColorValue;
 
-
-            // Background Color
-            if (result.bgColor != undefined){
-                console.log("BG Color: " + result.bgColor);
-                fEditBgColorValue = result.bgColor;
+            // Text Style: Bold
+            if (result.textStyle1 != undefined){
+                //console.log("Bold: " + result.textStyle1);
+                if (result.textStyle1 == true){
+                    fDisplay2.style.fontWeight = "bold";
+                    fEditTextStyle1.classList.add("favicon_edit_text_style_item_selected");
+                } else {
+                    fDisplay2.style.fontWeight = "normal";
+                }
             } else {
-                console.log("BG Color NOT SET");
-                fEditBgColorValue = "#FE145B";
+                //console.log("Bold Not set");
+                fDisplay2.style.fontWeight = "normal";
             }
-            fEditBgColor.value = fEditBgColorValue;
-            fDisplay1.style.backgroundColor = fEditBgColorValue;
+
+
+            // Text Style: Italic
+            if (result.textStyle2 != undefined){
+                //console.log("Italic: " + result.textStyle2);
+                if (result.textStyle2 == true){
+                    fDisplay2.style.fontStyle = "italic";
+                    fEditTextStyle2.classList.add("favicon_edit_text_style_item_selected");
+                } else {
+                    fDisplay2.style.fontStyle = "normal";
+                }
+            } else {
+                //console.log("Italic Not set");
+                fDisplay2.style.fontStyle = "normal";
+            }
+
+
+            // Text Style: Underline
+            if (result.textStyle3 != undefined){
+                //console.log("Underline: " + result.textStyle3);
+                if (result.textStyle3 == true){
+                    fDisplay2.style.textDecoration = "underline";
+                    fEditTextStyle3.classList.add("favicon_edit_text_style_item_selected");
+                } else {
+                    fDisplay2.style.textDecoration = "inherit";
+                }
+            } else {
+                //console.log("Underline Not set");
+                fDisplay2.style.textDecoration = "inherit";
+            }
+
+            // Text Style: Strike
+            if (result.textStyle3 != undefined && result.textStyle3 != true){
+                if (result.textStyle4 != undefined){
+                    //console.log("Strike: " + result.textStyle4);
+                    if (result.textStyle4 == true){
+                        fDisplay2.style.textDecoration = "line-through";
+                        fEditTextStyle4.classList.add("favicon_edit_text_style_item_selected");
+                    } else {
+                        fDisplay2.style.textDecoration = "inherit";
+                    }
+                } else {
+                    //console.log("Strike Not set");
+                    fDisplay2.style.textDecoration = "inherit";
+                }
+            } else {
+                fEditTextStyle4.classList.remove("favicon_edit_text_style_item_selected");
+            }
 
             
             // Font Size
             if (result.fontSize != undefined){
-                console.log("Font Size: " + result.fontSize);
+                //console.log("Font Size: " + result.fontSize);
                 fEditSizeValue = result.fontSize;
             } else {
-                console.log("Font Size NOT SET");
+                //console.log("Font Size NOT SET");
                 fEditSizeValue = "30";
             }
             fEditSize.value = fEditSizeValue;
@@ -241,7 +442,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // Font Type
             if (result.fontType != undefined){
                 if (result.fontType == "2"){
-                    console.log("Font Awesome is Checked");
+                    //console.log("Font Awesome is Checked");
+                    var textStyleItems = document.querySelectorAll(".favicon_edit_text_style_item");
+                    for(var i = 0; i < textStyleItems.length; i++){
+                        textStyleItems[i].classList.add("favicon_edit_text_style_item_disabled");
+                    }
                     addIcon();
                 } else {
                     addText();
@@ -254,10 +459,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Text
                 console.log("Should add text");
                 if (result.text != undefined){
-                    console.log("Text: " + result.text);
+                    //console.log("Text: " + result.text);
                     fEditTextValue = result.text;
                 } else {
-                    console.log("Text NOT SET");
+                    //console.log("Text NOT SET");
                     fEditTextValue = "F";
                 }
                 fEditText.value = fEditTextValue;
@@ -271,11 +476,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     fEditType2.checked = true;
 
                 if (result.fontAwesome != undefined){
-                    console.log("Font Awesome: " + result.fontAwesome);
+                    //console.log("Font Awesome: " + result.fontAwesome);
                     fEditText = '<i class="fa '+result.fontAwesome+'"></i>';
                     fEditText2 = result.fontAwesome;
                 } else {
-                    console.log("Font Awesome NOT SET");
+                    //console.log("Font Awesome NOT SET");
                     fEditText = '<i class="fa fa-thumbs-up"></i>';
                     fEditText2 = "fa-thumbs-up";
                 }
@@ -286,15 +491,81 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Font Family
             if (result.fontFamily != undefined){
-                console.log("Font Family: " + result.fontFamily);
+                //console.log("Font Family: " + result.fontFamily);
                 fEditGoogleFontValue = result.fontFamily;
             } else {
-                console.log("Font Family NOT SET");
+                //console.log("Font Family NOT SET");
                 fEditGoogleFontValue = "Montserrat";
             }
             fEditGoogleFont.value = fEditGoogleFontValue;
             fDisplay2.style.fontFamily = fEditGoogleFontValue;
             document.getElementById("googleFontStylesheet").setAttribute('href', 'https://fonts.googleapis.com/css?family='+fEditGoogleFontValue);
+
+
+
+            // Background Color
+            if (result.bgColor != undefined){
+                //console.log("BG Color: " + result.bgColor);
+                fEditBgColorValue = result.bgColor;
+            } else {
+                //console.log("BG Color NOT SET");
+                fEditBgColorValue = "#FE145B";
+            }
+            fEditBgColor.value = fEditBgColorValue;
+            fDisplay1.style.backgroundColor = fEditBgColorValue;
+
+
+            // Border Radius
+            if (result.borderRadius != undefined){
+                console.log("Border Radius: " + result.borderRadius);
+                fEditBorderRadiusValue = result.borderRadius;
+            } else {
+                console.log("Border Radius NOT SET");
+                fEditBorderRadiusValue = "0";
+            }
+            fEditBorderRadius.value = fEditBorderRadiusValue;
+            fDisplay1.style.borderRadius = fEditBorderRadiusValue + "%";
+            document.getElementById("favicon_edit_border_radius_text").innerHTML = "(" + fEditBorderRadiusValue + "%)";
+
+
+            // Border Display
+            if (result.border != undefined){
+                if (result.border == "1"){
+                    fEditBorderEnabled.classList.add("favicon_edit_border_item_active");
+                    fEditBorderDisabled.classList.remove("favicon_edit_border_item_active");
+                    fEditBorderContainer.style.display = "block";
+                    borderCreator();
+                } else {
+                    fDisplay1.style.border = "";
+                }
+            } else {
+                fDisplay1.style.border = "";
+            }
+
+
+            // Border Creator
+            function borderCreator(){
+
+                if (result.borderWidth != undefined){
+                    borderWidth = result.borderWidth + "px";
+                    fEditBorderWidth.value = result.borderWidth;
+                    fEditBorderWidthText.innerHTML = "("+result.borderWidth+"px)";
+                } else {
+                    borderWidth = "1px";
+                }
+
+                borderStyle = "solid";
+
+                if (result.borderColor != undefined){
+                    borderColor = result.borderColor;
+                    fEditBorderColor.value = result.borderColor;
+                } else {
+                    borderColor = "#000000";
+                }
+                
+                fDisplay1.style.border = borderWidth + " " + borderStyle + " " + borderColor;
+
+            }
 
         });
 

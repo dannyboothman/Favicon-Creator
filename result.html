@@ -1,35 +1,88 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <title>helo</title>
         <link rel="stylesheet" type="text/css" href="styles.css" />
         <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" />
         <link rel="stylesheet" id="googleFontStylesheet" />
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" />        
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" />  
         <script src="jszip.min.js"></script>
         <script src="FileSaver.js"></script>
         <script src="result.js"></script>
         <script src="html2canvas.js"></script>
+        <script src="script.js"></script>
     </head>
     <body>
         <header>
             <a id="logo">
-                <img src="images/icon/icon32.png" />
-                <div class="logo_text"><span>Favicon</span><span>Creator</span></div></a>
+                <span>F</span><span>Favicon</span><span>Creator</span>
+            </a>
+            <i class="fa fa-moon-o" id="theme_toggle" aria-hidden="true"></i>
         </header>
         <nav id="main_nav">
             <a id="main_nav1" href="popup.html"><i class="fa fa-home" aria-hidden="true"></i><span>Home</span></a>
-            <a id="main_nav2" class="main_nav_active"><i class="fa fa-star" aria-hidden="true"></i><span>Result</span></a>
-            <a id="main_nav3" href="help.html"><i class="fa fa-question-circle-o" aria-hidden="true"></i><span>Help</span></a>
+            <a id="main_nav2" class="main_nav_active"><i class="fa fa-star" aria-hidden="true"></i><span>Download</span></a>
+            <!--<a id="main_nav3" href="help.html"><i class="fa fa-question-circle-o" aria-hidden="true"></i><span>Help</span></a>-->
             <a id="main_nav4" href="feedback.html"><i class="fa fa-commenting-o" aria-hidden="true"></i><span>Feedback</span></a>
             <a id="main_nav5" href="settings.html"><i class="fa fa-cog" aria-hidden="true"></i><span>Settings</span></a>
         </nav>
         <main>
-            
-            <div id="favicon_display_container" class="favicon_display_container_result"></div>
-            
-            <div id="favicon_download_button">Download Zip</div>
             <div class="container">
-                <p class="align_center">Zip folder will consist of 5 different sized favicons.</p>
+                <div class="text_section">
+                    <div id="favicon_display_container" class="favicon_display_container_result"></div>
+                </div>
+                <div class="text_section hide_overflow" id="favicon_download_options_container">
+                    <div class="width_50">
+                        <p><strong>Image Size</strong></p>
+                        <div class="checkbox_container">
+                            <input type="checkbox" id="download_size1" name="download_size" checked="checked" />
+                            <label for="download_size1"><span>16 x 16</span></label>
+                        </div>
+                        <div class="checkbox_container">
+                            <input type="checkbox" id="download_size2" name="download_size" checked="checked" />
+                            <label for="download_size2"><span>32 x 32</span></label>
+                        </div>
+                        <div class="checkbox_container">
+                            <input type="checkbox" id="download_size3" name="download_size" checked="checked" />
+                            <label for="download_size3"><span>64 x 64</span></label>
+                        </div>
+                        <div class="checkbox_container">
+                            <input type="checkbox" id="download_size4" name="download_size" />
+                            <label for="download_size4"><span>128 x 128</span></label>
+                        </div>
+                        <div class="checkbox_container">
+                            <input type="checkbox" id="download_size5" name="download_size" />
+                            <label for="download_size5"><span>256 x 256</span></label>
+                        </div>
+                    </div>
+                    <div class="width_50">
+                        <p><strong>File Type</strong></p>
+                        <div class="checkbox_container">
+                            <input type="radio" id="download_type1" name="download_type" checked="checked" />
+                            <label for="download_type1"><span>PNG</span></label>
+                        </div>
+                        <div class="checkbox_container">
+                            <input type="radio" id="download_type2" name="download_type" />
+                            <label for="download_type2"><span>JPG</span></label>
+                        </div>
+                        <p><strong>Additional</strong></p>
+                        <div class="checkbox_container">
+                            <input type="checkbox" id="download_html" name="download_html" checked="checked" />
+                            <label for="download_html"><span>HTML</span></label>
+                        </div>
+                        <div class="checkbox_container">
+                            <input type="checkbox" id="download_readme" name="download_readme" checked="checked" />
+                            <label for="download_readme"><span>Read Me</span></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="text_section" id="html_output_container">
+                    <pre id="html_output_pre"><code id="html_output"></code></pre>
+                </div>
+                <div class="text_section">
+                    <div id="favicon_download_feedback"></div>
+                    <div class="button" id="favicon_download_button">Download</div>
+                </div>
             </div>
         </main>
     </body>
