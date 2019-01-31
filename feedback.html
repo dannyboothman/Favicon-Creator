@@ -4,17 +4,19 @@
         <link rel="stylesheet" type="text/css" href="styles.css" />
         <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" />
+        <script src="script.js"></script>
     </head>
     <body>
         <header>
             <a id="logo">
-                <img src="images/icon/icon32.png" />
-                <div class="logo_text"><span>Favicon</span><span>Creator</span></div></a>
+                <span>F</span><span>Favicon</span><span>Creator</span>
+            </a>
+            <i class="fa fa-moon-o" id="theme_toggle" aria-hidden="true"></i>
         </header>
         <nav id="main_nav">
             <a id="main_nav1" href="popup.html"><i class="fa fa-home" aria-hidden="true"></i><span>Home</span></a>
-            <a id="main_nav2" href="result.html"><i class="fa fa-star" aria-hidden="true"></i><span>Result</span></a>
-            <a id="main_nav3" href="help.html"><i class="fa fa-question-circle-o" aria-hidden="true"></i><span>Help</span></a>
+            <a id="main_nav2" href="result.html"><i class="fa fa-star" aria-hidden="true"></i><span>Download</span></a>
+            <!--<a id="main_nav3" href="help.html"><i class="fa fa-question-circle-o" aria-hidden="true"></i><span>Help</span></a>-->
             <a id="main_nav4" class="main_nav_active"><i class="fa fa-commenting-o" aria-hidden="true"></i><span>Feedback</span></a>
             <a id="main_nav5" href="settings.html"><i class="fa fa-cog" aria-hidden="true"></i><span>Settings</span></a>
         </nav>
@@ -25,30 +27,82 @@
                     <p>Please send all feedback, bugs, suggestions and feature requests to: <a href="mailto:dbwevdevs@gmail.com" target="_blank" class="link_primary">dbwevdevs@gmail.com</a> or via the reviews/ support section in the Chrome Store.</a></p>
                 </div>
                 <div class="text_section">
-                    <p><strong>Road Map</strong></p>
-                    <ul>
-                        <li>Ability to select what favicon sizes you want to download</li>
-                        <li>Enable/ Disable local storage</li>
-                        <li>Use of FontAwesome and text at the same time</li>
-                    </ul>
-                </div>
-                <div class="text_section">
                     <p><strong>Changelog</strong></p>
                     <div id="changelog_inner">
-                        <em>31st Sep 2018</em>
+                        <em>22nd Jan 2019</em>
+                        <ul>
+                            <li>Text and background design elements are now split into two tabs to create more room.</li>
+                        </ul>
+                        <em>10th Jan 2019</em>
+                        <ul>
+                            <li>You can now change the border radius of your favicon. Slight scaling issues when downloading larger size favicons.</li>
+                            <li>128 x 128 and 256 x 256 image sizes are now de-selected by default.</li>
+                        </ul>
+                        <em>09th Jan 2019</em>
+                        <ul>
+                            <li>Added the ability to change the text styles:
+                                <ol>
+                                    <li>Bold</li>
+                                    <li>Italic</li>
+                                    <li>Underline (only available for sizes 16, 32 &amp; 64)</li>
+                                    <li>Line-through</li>
+                                </ol>
+                            </li>
+                        </ul>
+                        <em>07th Jan 2019</em>
+                        <ul>
+                            <li>Big Fix: HTML Output sometimes displayed when re-opening the extension even if HTML wasn't checked.</li>
+                            <li>You can now click outside the FontAwesome menu to close the menu.</li>
+                        </ul>
+                        <em>04th Jan 2019</em>
+                        <ul>
+                            <li>Favicon on your current tab will update to the favicon you are creating when you go to the download section.</li>
+                        </ul>
+                        <em>03rd Jan 2019</em>
+                        <ul>
+                            <li>Looonnnnggg Christmas break :-)</li>
+                            <li>You can now clear your local storage via the Settings page</li>
+                        </ul>
+                        <em>11th Dec 2018</em>
+                        <ul>
+                            <li>HTML output is now provided if selected, this will give you the correct HTML for the file size and type that is chosen</li>
+                        </ul>
+                        <em>4th Dec 2018</em>
+                        <ul>
+                            <li>ReadMe.txt now added to the zip file when downloading your favicon (optional)</li>
+                        </ul>
+                        <em>1st Dec 2018</em>
+                        <ul>
+                            <li>Dark theme has now been added - This is also stored in local storage</li>
+                        </ul>
+                        <em>30th Nov 2018</em>
+                        <ul>
+                            <li>Selected file sizes are now stored in local storage</li>
+                        </ul>
+                        <em>28th Nov 2018</em>
+                        <ul>
+                            <li>Ability to select different file types to download</li>
+                            <li>Selected file type is now stored in local storage</li>
+                        </ul>
+                        <em>27th Nov 2018</em>
+                        <ul>
+                            <li>Office renovation</li>
+                            <li>Ability to select what favicon sizes you wish to download</li>
+                        </ul>
+                        <em>31st Oct 2018</em>
                         <ul>
                             <li>Bug fixes</li>
-                            <li>Published on Chrome Store</li>
+                            <li>Published to beta testers on Chrome Store</li>
                         </ul>
-                        <em>29th Sep 2018</em>
+                        <em>29th Oct 2018</em>
                         <ul>
-                            <li>Added Feedback page.</li>
+                            <li>Added Feedback page</li>
                             <li>Added Settings page</li>
                         </ul>
-                        <em>28th Sep 2018</em>
+                        <em>28th Oct 2018</em>
                         <ul>
-                            <li>Disabled automatic download when visiting the results section.</li>
-                            <li>Fixed some issues when re-opening extension and FontAwesome was selected.</li>
+                            <li>Disabled automatic download when visiting the results section</li>
+                            <li>Fixed some issues when re-opening extension and FontAwesome was selected</li>
                         </ul>
                     </div>
                 </div>
