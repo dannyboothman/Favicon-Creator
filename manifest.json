@@ -1,8 +1,15 @@
 {
     "name": "Favicon Creator", 
-    "version": "1.0.0.2",
+    "version": "1.0.0.8",
     "description": "Create a favicon for your website in seconds",
-    "permissions": ["storage"],
+    "permissions": [
+        "storage",
+        "tabs",
+        "activeTab",
+        "<all_urls>",
+        "http://*/",
+        "https://*/"
+    ],
     "browser_action": {
         "default_icon": {
             "16": "images/icon/icon16.png",
