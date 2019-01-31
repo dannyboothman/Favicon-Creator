@@ -3,6 +3,7 @@ Introduction
 
 Create a favicon for your website in seconds
 
+Download on the Chrome Store: https://chrome.google.com/webstore/detail/favicon-creator/edaanjknhmgcohcddbhpjfhganbmggka
 
 
 How it works
