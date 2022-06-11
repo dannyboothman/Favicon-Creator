@@ -1,23 +1,20 @@
 {
     "name": "Favicon Creator", 
-    "version": "1.0.0.8",
+    "version": "1.0.1.1",
     "description": "Create a favicon for your website in seconds",
     "permissions": [
         "storage",
-        "tabs",
-        "activeTab",
-        "<all_urls>",
-        "http://*/",
-        "https://*/"
+        "activeTab"
     ],
-    "browser_action": {
+    "action": {
         "default_icon": {
             "16": "images/icon/icon16.png",
             "32": "images/icon/icon32.png",
             "48": "images/icon/icon64.png",
             "128": "images/icon/icon128.png"
         },
-        "default_popup": "popup.html"
+        "default_popup": "popup.html",
+        "default_title": "Favicon Creator"
     },
     "icons": {
         "16": "images/icon/icon16.png",
@@ -25,5 +22,5 @@
         "48": "images/icon/icon64.png",
         "128": "images/icon/icon128.png"
     },
-    "manifest_version": 2
+    "manifest_version": 3
 }
