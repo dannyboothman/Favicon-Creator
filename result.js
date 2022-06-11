@@ -620,7 +620,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } else {
             firstLoad = false;
-            setTimeout(function(){
+            /*setTimeout(function(){
                 html2canvas(document.querySelector("#favicon_display"), { logging: true}).then(canvas => {
                     
                     var faviconForPage = canvas.toDataURL();
@@ -642,7 +642,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     
                 });
-            }, 100);
+            }, 100);*/
 
 
         }
