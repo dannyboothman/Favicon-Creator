@@ -465,8 +465,18 @@ header{
 
 /* Border */
 
-#favicon_edit_border_container{
+#favicon_edit_border_container, #favicon_edit_border_warning{
     display: none;
+}
+
+#favicon_edit_border_warning{
+    color: #b36300;
+    background-color: #fff3cd;
+    border: 1px solid #e8d390;
+    padding: 5px;
+    line-height: 15px;
+    border-radius: 4px;
+    margin-top: 10px
 }
 
 #favicon_edit_border{

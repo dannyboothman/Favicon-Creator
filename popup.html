@@ -693,10 +693,30 @@
                 <div id="favicon_edit_container2">
                     
                     <div class="hide_overflow">
+                        <div class="input_container">
+                            <div class="width_50">
+                                <div class="checkbox_container">
+                                    <input type="radio" id="favicon_edit_background_type_solid" name="favicon_edit_background_type" checked />
+                                    <label for="favicon_edit_background_type_solid"><span>Solid</span></label>
+                                </div>
+                            </div>
+                            <div class="width_50">
+                                <div class="checkbox_container">
+                                    <input type="radio" id="favicon_edit_background_type_gradient" name="favicon_edit_background_type" />
+                                    <label for="favicon_edit_background_type_gradient"><span>Gradient</span></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hide_overflow">
                         <div class="input_container input_container_50">
                             <label>Background Color</label>
                             <input type="color" value="#FE145B" id="favicon_edit_bg_color" />
                         </div>
+                    </div>
+
+                    <div class="hide_overflow">
                         <div class="width_50">
                             <div class="input_container">
                                 <label>Radius <span id="favicon_edit_border_radius_text">(0%)</span></label>
@@ -713,6 +733,12 @@
                                 <div id="favicon_edit_border2" class="favicon_edit_border_item favicon_edit_border_item_active">Disabled</div>
                             </div>
                         </div>
+                    </div>
+
+                    <div id="favicon_edit_border_warning">
+                        <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Scaling Issue</strong>
+                        <br />
+                        There is a scaling issue when generating borders on larger favicons. 
                     </div>
 
                     <div id="favicon_edit_border_container">

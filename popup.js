@@ -84,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var fEditTextStyle4 = document.getElementById("favicon_edit_text_style_item_strike");
     var fEditGoogleFont = document.getElementById("favicon_edit_google_font");
     var fEditBorderContainer = document.getElementById("favicon_edit_border_container");
+    var fEditBorderContainerWarning = document.getElementById("favicon_edit_border_warning");
     var fEditBorderEnabled = document.getElementById("favicon_edit_border1");
     var fEditBorderDisabled = document.getElementById("favicon_edit_border2");
     var fEditBorderColor = document.getElementById("favicon_edit_border_color");
@@ -293,6 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fEditBorderDisabled.classList.remove("favicon_edit_border_item_active");
         chrome.storage.local.set({border: "1"});
         fEditBorderContainer.style.display = "block";
+        fEditBorderContainerWarning.style.display = "block";
         getFavicon();
     }
 
@@ -302,6 +304,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fEditBorderDisabled.classList.add("favicon_edit_border_item_active");
         chrome.storage.local.set({border: "2"});
         fEditBorderContainer.style.display = "none";
+        fEditBorderContainerWarning.style.display = "none";
         getFavicon();
     }
 
@@ -534,6 +537,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     fEditBorderEnabled.classList.add("favicon_edit_border_item_active");
                     fEditBorderDisabled.classList.remove("favicon_edit_border_item_active");
                     fEditBorderContainer.style.display = "block";
+                    fEditBorderContainerWarning.style.display = "block";
                     borderCreator();
                 } else {
                     fDisplay1.style.border = "";
