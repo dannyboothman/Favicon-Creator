@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     /* Var value set */
     var fEditTextColorValue;
     var fEditBgColorValue;
-    var fEditBgColorValue;
+    var fEditBgColorValue2;
     var fEditSizeValue;
     var fEditBorderRadiusValue;
     var fEditTextValue;
@@ -328,17 +328,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 //console.log("BG Color NOT SET");
                 fEditBgColorValue = "#FE145B";
             }
-            fDisplay1.style.backgroundColor = "linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%)";
+            fDisplay1.style.backgroundColor = fEditBgColorValue;
 
             // Background Gradient
-            if (result.bgType != undefined){
-                fEditBgColorValue = result.bgColor;
-                fEditBgColorValue2 = result.bgColor2;
-                fDisplay1.style.background = "linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%)";
-            } else {
-                fEditBgColorValue = "#FE145B";
-                fEditBgColorValue2 = "#000000";
-                fDisplay1.style.background = "linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%)";
+            if (result.bgType != undefined && result.bgType == 2){
+                fEditBgColorValue = result.bgColor ? result.bgColor : "#FE145B";
+                fEditBgColorValue2 =  result.bgColor2 ? result.bgColor2 : "#000";
+                fDisplay1.style.background = `linear-gradient(90deg, ${fEditBgColorValue} 0%, ${fEditBgColorValue2} 78%)`;
             }
 
             // Border Radius

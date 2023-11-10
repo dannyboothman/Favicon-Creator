@@ -80,11 +80,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var fBackgroundType1 = document.getElementById("favicon_edit_background_type_solid");
     var fBackgroundType2 = document.getElementById("favicon_edit_background_type_gradient");
     var fBackgroundType2Container1 = document.getElementById("favicon_edit_background_type_gradient_container");
-    var fBackgroundType2Container2 = document.getElementById("favicon_edit_background_type_gradient_container2");
+    //var fBackgroundType2Container2 = document.getElementById("favicon_edit_background_type_gradient_container2");
 
     fBackgroundType1.addEventListener('click', function() {
         fBackgroundType2Container1.style.display = "none";
-        fBackgroundType2Container2.style.display = "none";
+        //fBackgroundType2Container2.style.display = "none";
         chrome.storage.local.set({bgType: "1"});
 
         /*var textStyleItems = document.querySelectorAll(".favicon_edit_text_style_item");
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     fBackgroundType2.addEventListener('click', function() {
         fBackgroundType2Container1.style.display = "block";
-        fBackgroundType2Container2.style.display = "block";
+        //fBackgroundType2Container2.style.display = "block";
         chrome.storage.local.set({bgType: "2"});
 
         /*var textStyleItems = document.querySelectorAll(".favicon_edit_text_style_item");
@@ -595,11 +595,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             function addGradient(){
-
+                console.log("1");
                 fBackgroundType2Container1.style.display = "block";
-                fBackgroundType2Container2.style.display = "block";
+                //fBackgroundType2Container2.style.display = "block";
                 fBackgroundType2.checked = true;
-
+                console.log("2");
                 // Add a normal bg first
                 if (result.bgColor != undefined){
                     //console.log("BG Color: " + result.bgColor);
@@ -610,7 +610,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 fEditBgColor.value = fEditBgColorValue;
                 fDisplay1.style.backgroundColor = fEditBgColorValue;
-
+                console.log("3");
                 if (result.bgColor2 != undefined){
                     console.log("BG Color2: " + result.bgColor2);
                     fEditBgColorValue2 = result.bgColor2;
@@ -618,11 +618,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log("BG Color 2 NOT SET");
                     fEditBgColorValue2 = "#000000";
                 }
+                console.log("4");
                 var theGradient = 'linear-gradient(90deg, ' + fEditBgColorValue + ' 0%, ' + fEditBgColorValue2 + ' 78%)';
                 fEditBgColor2.value = fEditBgColorValue2;
                 console.log(theGradient);
                 fDisplay1.style.background = theGradient;
-                
+                console.log("5");
             }
 
             // Border Radius
