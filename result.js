@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     /* Var value set */
     var fEditTextColorValue;
     var fEditBgColorValue;
+    var fEditBgColorValue;
     var fEditSizeValue;
     var fEditBorderRadiusValue;
     var fEditTextValue;
@@ -127,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         var borderLive = false;
 
-        chrome.storage.local.get(['fontType', 'textColor', 'bgColor', 'fontSize', 'borderRadius', 'text', 'textStyle1', 'textStyle2', 'textStyle3', 'textStyle4', 'fontFamily', 'fontAwesome', 'border', 'borderColor', 'borderWidth', 'download_size1', 'download_size2', 'download_size3', 'download_size4', 'download_size5', 'fileType', 'fileHtml', 'fileReadMe'], function(result) {
+        chrome.storage.local.get(['fontType', 'textColor', 'bgColor', 'bgColor2', 'bgType', 'fontSize', 'borderRadius', 'text', 'textStyle1', 'textStyle2', 'textStyle3', 'textStyle4', 'fontFamily', 'fontAwesome', 'border', 'borderColor', 'borderWidth', 'download_size1', 'download_size2', 'download_size3', 'download_size4', 'download_size5', 'fileType', 'fileHtml', 'fileReadMe'], function(result) {
 
             var totalSizeChecked = 0;
 
@@ -327,7 +328,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 //console.log("BG Color NOT SET");
                 fEditBgColorValue = "#FE145B";
             }
-            fDisplay1.style.backgroundColor = fEditBgColorValue;
+            fDisplay1.style.backgroundColor = "linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%)";
+
+            // Background Gradient
+            if (result.bgType != undefined){
+                fEditBgColorValue = result.bgColor;
+                fEditBgColorValue2 = result.bgColor2;
+                fDisplay1.style.background = "linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%)";
+            } else {
+                fEditBgColorValue = "#FE145B";
+                fEditBgColorValue2 = "#000000";
+                fDisplay1.style.background = "linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%)";
+            }
 
             // Border Radius
             if (result.borderRadius != undefined){

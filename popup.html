@@ -29,9 +29,10 @@
 
             <div id="favicon_edit_container">
 
-                <div class="hide_overflow">
-                    <div id="favicon_tab1" class="favicon_tab favicon_tab_active">Text</div>
+                <div id="favicon_tab_container">
+                    <div id="favicon_tab1" class="favicon_tab favicon_tab_active">Visual</div>
                     <div id="favicon_tab2" class="favicon_tab">Background</div>
+                    <div id="favicon_tab3" class="favicon_tab">Other</div>
                 </div>
 
 
@@ -714,8 +715,48 @@
                             <label>Background Color</label>
                             <input type="color" value="#FE145B" id="favicon_edit_bg_color" />
                         </div>
+                        <div class="width_50" id="favicon_edit_background_type_gradient_container">
+                            <div class="input_container">
+                                <label>Background Color 2</label>
+                                <input type="color" value="#FE145B" id="favicon_edit_bg_color2" />
+                            </div>
+                        </div>
                     </div>
 
+                    <div id="favicon_edit_background_type_gradient_container2" style="margin-top: 10px;">
+                        
+                        <div class="hide_overflow">
+
+                            <div class="width_50">
+                                <p><strong>Gradient Type</strong></p>
+                                <div class="width_50">
+                                    <div class="checkbox_container">
+                                        <input type="radio" id="favicon_edit_background_type_gradient_type_linear" name="favicon_edit_background_gradient_type" checked />
+                                        <label for="favicon_edit_background_type_gradient_type_linear"><span>Linear</span></label>
+                                    </div>
+                                </div>
+                                <div class="width_50">
+                                    <div class="checkbox_container">
+                                        <input type="radio" id="favicon_edit_background_type_gradient_type_radial" name="favicon_edit_background_gradient_type" />
+                                        <label for="favicon_edit_background_type_gradient_type_radial"><span>Radial</span></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="width_50">
+                                <div class="input_container">
+                                    <label><span>90</span>degs</label>
+                                    <input type="range" min="0" max="360" value="90" id="favicon_edit_linear_degs" />
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div id="favicon_edit_container3">
                     <div class="hide_overflow">
                         <div class="width_50">
                             <div class="input_container">
@@ -753,8 +794,6 @@
                             </div>
                         </div>
                     </div>
-
-
                 </div>
 
             </div>

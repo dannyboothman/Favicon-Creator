@@ -160,14 +160,20 @@ header{
     padding: 0px 10px;
 }
 
-#favicon_edit_container2{
+#favicon_edit_container2, #favicon_edit_container3, 
+#favicon_edit_background_type_gradient_container, #favicon_edit_background_type_gradient_container2{
     display: none;
 }
 
+#favicon_tab_container{
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+}
+
 .favicon_tab{
-    float: left;
-    width: 50%;
     line-height: 40px;
+    width: 100%;
     border-bottom: 4px solid #ddd;
     text-align: center;
     cursor: pointer;

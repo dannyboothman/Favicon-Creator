@@ -3,23 +3,39 @@ document.addEventListener('DOMContentLoaded', function() {
     /* Favicon Tabs */
     var fEditTab1 = document.getElementById("favicon_tab1");
     var fEditTab2 = document.getElementById("favicon_tab2");
+    var fEditTab3 = document.getElementById("favicon_tab3");
     var fEditTabContainer1 = document.getElementById("favicon_edit_container1");
     var fEditTabContainer2 = document.getElementById("favicon_edit_container2");
+    var fEditTabContainer3 = document.getElementById("favicon_edit_container3");
 
     fEditTab1.addEventListener('click', function() {
         fEditTab1.classList.add("favicon_tab_active");
         fEditTab2.classList.remove("favicon_tab_active");
+        fEditTab3.classList.remove("favicon_tab_active");
         fEditTabContainer1.style.display = "block";
         fEditTabContainer2.style.display = "none";
+        fEditTabContainer3.style.display = "none";
         chrome.storage.local.set({tab: "1"});
     });
 
     fEditTab2.addEventListener('click', function() {
         fEditTab2.classList.add("favicon_tab_active");
         fEditTab1.classList.remove("favicon_tab_active");
+        fEditTab3.classList.remove("favicon_tab_active");
         fEditTabContainer2.style.display = "block";
         fEditTabContainer1.style.display = "none";
+        fEditTabContainer3.style.display = "none";
         chrome.storage.local.set({tab: "2"});
+    });
+
+    fEditTab3.addEventListener('click', function() {
+        fEditTab3.classList.add("favicon_tab_active");
+        fEditTab1.classList.remove("favicon_tab_active");
+        fEditTab2.classList.remove("favicon_tab_active");
+        fEditTabContainer2.style.display = "none";
+        fEditTabContainer1.style.display = "none";
+        fEditTabContainer3.style.display = "block";
+        chrome.storage.local.set({tab: "3"});
     });
 
     /* Favicon Display */
@@ -60,9 +76,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
     /* End of Favicon Type Nav */
 
+    /* Favicon Background Nav */
+    var fBackgroundType1 = document.getElementById("favicon_edit_background_type_solid");
+    var fBackgroundType2 = document.getElementById("favicon_edit_background_type_gradient");
+    var fBackgroundType2Container1 = document.getElementById("favicon_edit_background_type_gradient_container");
+    var fBackgroundType2Container2 = document.getElementById("favicon_edit_background_type_gradient_container2");
+
+    fBackgroundType1.addEventListener('click', function() {
+        fBackgroundType2Container1.style.display = "none";
+        fBackgroundType2Container2.style.display = "none";
+        chrome.storage.local.set({bgType: "1"});
+
+        /*var textStyleItems = document.querySelectorAll(".favicon_edit_text_style_item");
+        for(var i = 0; i < textStyleItems.length; i++){
+            textStyleItems[i].classList.remove("favicon_edit_text_style_item_disabled");
+        }*/
+
+        getFavicon();
+    });
+
+    fBackgroundType2.addEventListener('click', function() {
+        fBackgroundType2Container1.style.display = "block";
+        fBackgroundType2Container2.style.display = "block";
+        chrome.storage.local.set({bgType: "2"});
+
+        /*var textStyleItems = document.querySelectorAll(".favicon_edit_text_style_item");
+        for(var i = 0; i < textStyleItems.length; i++){
+            textStyleItems[i].classList.add("favicon_edit_text_style_item_disabled");
+        }*/
+
+        getFavicon();
+    });
+
+    /* End of Favicon Background Nav */
+
     /* Var value set */
     var fEditTextColorValue;
     var fEditBgColorValue;
+    var fEditBgColorValue2;
     var fEditSizeValue;
     var fEditBorderRadiusValue;
     var fEditBorderWidthValue;
@@ -75,6 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
     /* Var input set */
     var fEditTextColor = document.getElementById("favicon_edit_text_color");
     var fEditBgColor = document.getElementById("favicon_edit_bg_color");
+    var fEditBgColor2 = document.getElementById("favicon_edit_bg_color2");
     var fEditSize = document.getElementById("favicon_edit_font_size");
     var fEditBorderRadius = document.getElementById("favicon_edit_border_radius");
     var fEditText = document.getElementById("favicon_edit_text");
@@ -108,6 +160,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function fChangeBgColor(){
         fEditBgColorValue = document.getElementById("favicon_edit_bg_color").value;
         chrome.storage.local.set({bgColor: fEditBgColorValue});
+        getFavicon();
+    }
+    /* End of BG Color */
+
+    /* BG Color2 */
+    fEditBgColor2.addEventListener("input", fChangeBgColor2);
+    function fChangeBgColor2(){
+        fEditBgColorValue2 = document.getElementById("favicon_edit_bg_color2").value;
+        chrome.storage.local.set({bgColor2: fEditBgColorValue2});
         getFavicon();
     }
     /* End of BG Color */
@@ -343,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function() {
             fDisplay2 = document.getElementById("favicon_display_content");
         }
 
-        chrome.storage.local.get(['fontType', 'textColor', 'bgColor', 'fontSize', 'borderRadius', 'text', 'textStyle1', 'textStyle2', 'textStyle3', 'textStyle4', 'fontFamily', 'fontAwesome', 'tab', 'border', 'borderColor', 'borderWidth'], function(result) {
+        chrome.storage.local.get(['fontType', 'textColor', 'bgColor', 'bgColor2', 'bgType', 'fontSize', 'borderRadius', 'text', 'textStyle1', 'textStyle2', 'textStyle3', 'textStyle4', 'fontFamily', 'fontAwesome', 'tab', 'border', 'borderColor', 'borderWidth'], function(result) {
 
             // Tab
             if (result.tab != undefined){
@@ -506,24 +567,70 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-            // Background Color
-            if (result.bgColor != undefined){
-                //console.log("BG Color: " + result.bgColor);
-                fEditBgColorValue = result.bgColor;
+            
+            if (result.bgType != undefined){
+                if (result.bgType == "2"){
+                    //console.log("Gradient Checked is Checked");
+                    addGradient();
+                } else {
+                    addBackgroundColor();
+                }
             } else {
-                //console.log("BG Color NOT SET");
-                fEditBgColorValue = "#FE145B";
+                addBackgroundColor();
             }
-            fEditBgColor.value = fEditBgColorValue;
-            fDisplay1.style.backgroundColor = fEditBgColorValue;
 
+            function addBackgroundColor(){
+                // Background Color
+                if (result.bgColor != undefined){
+                    //console.log("BG Color: " + result.bgColor);
+                    fEditBgColorValue = result.bgColor;
+                } else {
+                    //console.log("BG Color NOT SET");
+                    fEditBgColorValue = "#FE145B";
+                }
+                fEditBgColor.value = fEditBgColorValue;
+                fDisplay1.style.background = "";
+                fDisplay1.style.backgroundColor = fEditBgColorValue;
+
+            }
+
+            function addGradient(){
+
+                fBackgroundType2Container1.style.display = "block";
+                fBackgroundType2Container2.style.display = "block";
+                fBackgroundType2.checked = true;
+
+                // Add a normal bg first
+                if (result.bgColor != undefined){
+                    //console.log("BG Color: " + result.bgColor);
+                    fEditBgColorValue = result.bgColor;
+                } else {
+                    //console.log("BG Color NOT SET");
+                    fEditBgColorValue = "#FE145B";
+                }
+                fEditBgColor.value = fEditBgColorValue;
+                fDisplay1.style.backgroundColor = fEditBgColorValue;
+
+                if (result.bgColor2 != undefined){
+                    console.log("BG Color2: " + result.bgColor2);
+                    fEditBgColorValue2 = result.bgColor2;
+                } else {
+                    console.log("BG Color 2 NOT SET");
+                    fEditBgColorValue2 = "#000000";
+                }
+                var theGradient = 'linear-gradient(90deg, ' + fEditBgColorValue + ' 0%, ' + fEditBgColorValue2 + ' 78%)';
+                fEditBgColor2.value = fEditBgColorValue2;
+                console.log(theGradient);
+                fDisplay1.style.background = theGradient;
+                
+            }
 
             // Border Radius
             if (result.borderRadius != undefined){
-                console.log("Border Radius: " + result.borderRadius);
+                //console.log("Border Radius: " + result.borderRadius);
                 fEditBorderRadiusValue = result.borderRadius;
             } else {
-                console.log("Border Radius NOT SET");
+                //console.log("Border Radius NOT SET");
                 fEditBorderRadiusValue = "0";
             }
             fEditBorderRadius.value = fEditBorderRadiusValue;
