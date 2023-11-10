@@ -599,11 +599,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     xhttp.onreadystatechange = function() {
                         if (this.readyState == 4 && this.status == 200) {
                             readMeFile = this.responseText;
-                            zip.file("ReadMe.txt", readMeFile);
+                            zip.file("ReadMe.md", readMeFile);
                             downloadZip();
                         }
                     };
-                    xhttp.open("GET", 'ReadMe.txt', true);
+                    xhttp.open("GET", 'ReadMe.md', true);
                     xhttp.send();
 
                 } else {

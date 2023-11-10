@@ -1,6 +1,6 @@
 {
     "name": "Favicon Creator", 
-    "version": "1.0.2.0",
+    "version": "1.0.2.1",
     "description": "Create a favicon for your website in seconds",
     "permissions": [
         "storage",

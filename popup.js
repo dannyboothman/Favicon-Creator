@@ -80,11 +80,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var fBackgroundType1 = document.getElementById("favicon_edit_background_type_solid");
     var fBackgroundType2 = document.getElementById("favicon_edit_background_type_gradient");
     var fBackgroundType2Container1 = document.getElementById("favicon_edit_background_type_gradient_container");
-    //var fBackgroundType2Container2 = document.getElementById("favicon_edit_background_type_gradient_container2");
+    var fBackgroundType2Container2 = document.getElementById("favicon_edit_background_type_gradient_container2");
 
     fBackgroundType1.addEventListener('click', function() {
         fBackgroundType2Container1.style.display = "none";
-        //fBackgroundType2Container2.style.display = "none";
+        fBackgroundType2Container2.style.display = "none";
         chrome.storage.local.set({bgType: "1"});
 
         /*var textStyleItems = document.querySelectorAll(".favicon_edit_text_style_item");
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     fBackgroundType2.addEventListener('click', function() {
         fBackgroundType2Container1.style.display = "block";
-        //fBackgroundType2Container2.style.display = "block";
+        fBackgroundType2Container2.style.display = "block";
         chrome.storage.local.set({bgType: "2"});
 
         /*var textStyleItems = document.querySelectorAll(".favicon_edit_text_style_item");
@@ -114,6 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var fEditTextColorValue;
     var fEditBgColorValue;
     var fEditBgColorValue2;
+    var fEditBgDegreesValue;
     var fEditSizeValue;
     var fEditBorderRadiusValue;
     var fEditBorderWidthValue;
@@ -127,6 +128,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var fEditTextColor = document.getElementById("favicon_edit_text_color");
     var fEditBgColor = document.getElementById("favicon_edit_bg_color");
     var fEditBgColor2 = document.getElementById("favicon_edit_bg_color2");
+    var fEditBgDegrees = document.getElementById("favicon_edit_linear_degs");
+    var fEditBgDegreesText = document.getElementById("favicon_edit_linear_degs_text");
     var fEditSize = document.getElementById("favicon_edit_font_size");
     var fEditBorderRadius = document.getElementById("favicon_edit_border_radius");
     var fEditText = document.getElementById("favicon_edit_text");
@@ -171,6 +174,15 @@ document.addEventListener('DOMContentLoaded', function() {
         chrome.storage.local.set({bgColor2: fEditBgColorValue2});
         getFavicon();
     }
+
+    /* Degrees */
+    fEditBgDegrees.addEventListener("change", fChangeBgDegrees);
+    function fChangeBgDegrees(){
+        fEditBgDegreesValue = document.getElementById("favicon_edit_linear_degs").value;
+        chrome.storage.local.set({bgDegrees: fEditBgDegreesValue});
+        getFavicon();
+    }
+    /* End Degrees */
     /* End of BG Color */
 
 
@@ -404,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function() {
             fDisplay2 = document.getElementById("favicon_display_content");
         }
 
-        chrome.storage.local.get(['fontType', 'textColor', 'bgColor', 'bgColor2', 'bgType', 'fontSize', 'borderRadius', 'text', 'textStyle1', 'textStyle2', 'textStyle3', 'textStyle4', 'fontFamily', 'fontAwesome', 'tab', 'border', 'borderColor', 'borderWidth'], function(result) {
+        chrome.storage.local.get(['fontType', 'textColor', 'bgColor', 'bgColor2', 'bgType', 'bgDegrees', 'fontSize', 'borderRadius', 'text', 'textStyle1', 'textStyle2', 'textStyle3', 'textStyle4', 'fontFamily', 'fontAwesome', 'tab', 'border', 'borderColor', 'borderWidth'], function(result) {
 
             // Tab
             if (result.tab != undefined){
@@ -595,11 +607,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             function addGradient(){
-                console.log("1");
+                
                 fBackgroundType2Container1.style.display = "block";
-                //fBackgroundType2Container2.style.display = "block";
+                fBackgroundType2Container2.style.display = "block";
                 fBackgroundType2.checked = true;
-                console.log("2");
+                
                 // Add a normal bg first
                 if (result.bgColor != undefined){
                     //console.log("BG Color: " + result.bgColor);
@@ -610,7 +622,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 fEditBgColor.value = fEditBgColorValue;
                 fDisplay1.style.backgroundColor = fEditBgColorValue;
-                console.log("3");
+                
                 if (result.bgColor2 != undefined){
                     console.log("BG Color2: " + result.bgColor2);
                     fEditBgColorValue2 = result.bgColor2;
@@ -618,12 +630,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log("BG Color 2 NOT SET");
                     fEditBgColorValue2 = "#000000";
                 }
-                console.log("4");
-                var theGradient = 'linear-gradient(90deg, ' + fEditBgColorValue + ' 0%, ' + fEditBgColorValue2 + ' 78%)';
+
+                if (result.bgDegrees != undefined){
+                    console.log("BG Degrees: " + result.bgDegrees);
+                    fEditBgDegreesValue = result.bgDegrees;
+                } else {
+                    console.log("BG Degrees NOT SET");
+                    fEditBgDegreesValue = 90;
+                }
+                
+                var theGradient = 'linear-gradient('+fEditBgDegreesValue+'deg, ' + fEditBgColorValue + ' 0%, ' + fEditBgColorValue2 + ' 78%)';
+                fEditBgDegreesText.innerText = fEditBgDegreesValue;
                 fEditBgColor2.value = fEditBgColorValue2;
                 console.log(theGradient);
                 fDisplay1.style.background = theGradient;
-                console.log("5");
+                
             }
 
             // Border Radius
