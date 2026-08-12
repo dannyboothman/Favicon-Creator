@@ -680,6 +680,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             }
 
+            if (typeof previewFaviconInActiveTab === "function") {
+                previewFaviconInActiveTab(fDisplay1);
+            }
+
         });
 
     }

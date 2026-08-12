@@ -467,6 +467,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             htmlOutput();
 
+            if (!shouldDownload && typeof previewFaviconInActiveTab === "function") {
+                previewFaviconInActiveTab(fDisplay1);
+            }
+
             if (shouldDownload){
             var zip = new JSZip();
             
