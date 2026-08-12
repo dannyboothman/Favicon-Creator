@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('partialsLoaded', function() {
 
     chrome.storage.local.get(['theme'], function(result) {
         if (result.theme != undefined){
