@@ -287,7 +287,15 @@ document.addEventListener('DOMContentLoaded', function() {
     chrome.storage.local.get(['googleFonts'], function(result) {
         if (result.googleFonts != undefined){
             //console.log("Has google fonts")
-            fEditGoogleFont.innerHTML = result.googleFonts;
+            if (Array.isArray(result.googleFonts)) {
+                googleFontsMarkup = result.googleFonts.map(function (item) {
+                    return '<option value="'+item+'">'+item+'</option>';
+                }).join('');
+                fEditGoogleFont.innerHTML = googleFontsMarkup;
+                chrome.storage.local.set({googleFonts: googleFontsMarkup});
+            } else {
+                fEditGoogleFont.innerHTML = result.googleFonts;
+            }
             getFavicon();
         } else {
             //console.log("Get Google Fonts");
@@ -318,23 +326,33 @@ document.addEventListener('DOMContentLoaded', function() {
     var fontAwesomeButton = document.getElementById("favicon_edit_font_awesome_button");
     var fontAwesomeContainer = document.getElementById("favicon_edit_font_awesome");
 
+    function formatFontAwesomeLabel(icon) {
+        return icon
+            .replace(/^fa-/, "")
+            .split("-")
+            .map(function(part) {
+                return part.charAt(0).toUpperCase() + part.slice(1);
+            })
+            .join(" ");
+    }
+
+    for (var i = 0; i < FONT_AWESOME_ICONS.length; i++) {
+        var icon = FONT_AWESOME_ICONS[i];
+        var li = document.createElement("li");
+        li.setAttribute("data-icon", icon);
+        li.innerHTML = '<i class="fa ' + icon + '"></i> <span>' + formatFontAwesomeLabel(icon) + '</span>';
+        fontAwesomeContainer.appendChild(li);
+    }
+
     fontAwesomeButton.addEventListener("click", function(){
         fontAwesomeContainer.classList.toggle("favicon_edit_font_awesome_active");
     });
 
     fontAwesomeContainer.addEventListener("click",function(e) {
         var fontAwesomeChange = false;
-        if (e.target && e.target.matches("li")) {
-            var fontAwesomeSpan = e.target.querySelector("span");
-            fEditFontAwesomeValue = fontAwesomeSpan.innerText;
-            selectFontAwesomeIcon(fEditFontAwesomeValue);
-        }
-        if (e.target && e.target.matches("span")) {
-            fEditFontAwesomeValue = e.target.innerText;
-            selectFontAwesomeIcon(fEditFontAwesomeValue);
-        }
-        if (e.target && e.target.matches("i")) {
-            fEditFontAwesomeValue = e.target.nextElementSibling.innerText;
+        var item = e.target.closest("li");
+        if (item && fontAwesomeContainer.contains(item)) {
+            fEditFontAwesomeValue = item.getAttribute("data-icon");
             selectFontAwesomeIcon(fEditFontAwesomeValue);
         }
     });
@@ -344,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(function(){
             fontAwesomeContainer.classList.remove("favicon_edit_font_awesome_active");
         }, 150);
-        fontAwesomeButton.innerHTML = "<i class='fa "+el+"'></i>" + el + " <i class='fa fa-caret-down'></i>";
+        fontAwesomeButton.innerHTML = "<i class='fa "+el+"'></i>" + formatFontAwesomeLabel(el) + " <i class='fa fa-caret-down'></i>";
         getFavicon();
     }
 
@@ -554,11 +572,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (result.fontAwesome != undefined){
                     //console.log("Font Awesome: " + result.fontAwesome);
                     fEditText = '<i class="fa '+result.fontAwesome+'"></i>';
-                    fEditText2 = result.fontAwesome;
+                    fEditText2 = formatFontAwesomeLabel(result.fontAwesome);
                 } else {
                     //console.log("Font Awesome NOT SET");
                     fEditText = '<i class="fa fa-thumbs-up"></i>';
-                    fEditText2 = "fa-thumbs-up";
+                    fEditText2 = formatFontAwesomeLabel("fa-thumbs-up");
                 }
                 fontAwesomeButton.innerHTML = fEditText + fEditText2 + " <i class='fa fa-caret-down'></i>";
                 fDisplay2.innerHTML = fEditText;
