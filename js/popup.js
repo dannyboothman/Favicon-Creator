@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
     /* Favicon Display */
     var fDisplay1;
     var fDisplay2;
+    var faviconCreated = false;
 
     /* Favicon Type Nav */
     var fEditType1 = document.getElementById("favicon_edit_type1");
@@ -120,7 +121,6 @@ document.addEventListener('DOMContentLoaded', function() {
     var fEditBorderWidthValue;
     var fEditTextValue;
     var fEditGoogleFontValue;
-    var googleFontsMarkup;
     var fEditFontAwesomeValue;
     /* End of Var value set */
 
@@ -278,48 +278,11 @@ document.addEventListener('DOMContentLoaded', function() {
         chrome.storage.local.set({fontFamily: fEditGoogleFontValue});
         getFavicon();
     }
+
+    fEditGoogleFont.innerHTML = GOOGLE_FONTS.map(function (family) {
+        return '<option value="' + family + '">' + family + '</option>';
+    }).join('');
     /* End of Google Fonts */
-
-    /* Google Fonts */
-
-    var googleFontsUrl = 'https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyBjoLHzfKeMU31kCbFXE7XrmrwzMWypxTE&sort=popularity';
-    
-    chrome.storage.local.get(['googleFonts'], function(result) {
-        if (result.googleFonts != undefined){
-            //console.log("Has google fonts")
-            if (Array.isArray(result.googleFonts)) {
-                googleFontsMarkup = result.googleFonts.map(function (item) {
-                    return '<option value="'+item+'">'+item+'</option>';
-                }).join('');
-                fEditGoogleFont.innerHTML = googleFontsMarkup;
-                chrome.storage.local.set({googleFonts: googleFontsMarkup});
-            } else {
-                fEditGoogleFont.innerHTML = result.googleFonts;
-            }
-            getFavicon();
-        } else {
-            //console.log("Get Google Fonts");
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    var googleFonts = JSON.parse(this.responseText);
-                    googleFonts = googleFonts.items;
-                    googleFontsMarkup =
-                            googleFonts.map(function (item) {
-                                return '<option value="'+item.family+'">'+item.family+'</option>';
-                            }).join('');
-                    
-                    fEditGoogleFont.innerHTML = googleFontsMarkup;
-                    chrome.storage.local.set({googleFonts: googleFontsMarkup});
-                    getFavicon();
-                }
-            };
-            xhttp.open("GET", googleFontsUrl, true);
-            xhttp.send();
-        }
-    });
-
-
 
     /* Font Awesome */
 
@@ -413,14 +376,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     
-    var faviconCreated = false;
     function getFavicon(){
 
         // Have to declare this here as well? Not sure why? 
         //Is it because its declared and not visible if FontAwesome is displayed first
         fEditText = document.getElementById("favicon_edit_text");
 
-        if (faviconCreated === false){
+        if (!faviconCreated){
             faviconCreated = true;
             
             var faviconHtml = '';
@@ -721,6 +683,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
     }
+
+    getFavicon();
 
 });
 
