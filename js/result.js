@@ -47,9 +47,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    var isDownloading = false;
+
     fEditDownloadButton.addEventListener('click', function() {
+        if (isDownloading || fEditDownloadButton.classList.contains("favicon_download_button_disabled")){
+            return;
+        }
+        if (firstLoad === false){
+            isDownloading = true;
+            fEditDownloadButton.textContent = "Downloading";
+            fEditDownloadButton.classList.add("favicon_download_button_disabled");
+        }
         getFavicon();
     });
+
+    function finishDownloading(){
+        isDownloading = false;
+        fEditDownloadButton.textContent = "Download";
+        if (document.querySelector("input[name='download_size']:checked")){
+            fEditDownloadButton.classList.remove("favicon_download_button_disabled");
+        }
+    }
 
     // HTML OUTPUT
     function htmlOutput(){
@@ -114,6 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function getFavicon(){
 
+        var shouldDownload = firstLoad === false;
         var faviconHtml = '';
             faviconHtml += '<div id="favicon_display">';
                 faviconHtml += '<div id="favicon_display_content"></div>';
@@ -121,7 +140,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         var faviconHtmlContainer = document.getElementById("favicon_display_container");
 
-        faviconHtmlContainer.innerHTML = faviconHtml;
+        // Keep the styled preview on download so it does not flash/disappear
+        if (!shouldDownload || !document.getElementById("favicon_display")){
+            faviconHtmlContainer.innerHTML = faviconHtml;
+        }
 
         fDisplay1 = document.getElementById("favicon_display");
         fDisplay2 = document.getElementById("favicon_display_content");
@@ -205,7 +227,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (totalSizeChecked > 0){
-                fEditDownloadButton.classList.remove("favicon_download_button_disabled");
+                if (!isDownloading){
+                    fEditDownloadButton.classList.remove("favicon_download_button_disabled");
+                }
                 fEditDownloadFeedback.innerText = "";
             } else {
                 fEditDownloadButton.classList.add("favicon_download_button_disabled");
@@ -442,10 +466,8 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById("googleFontStylesheet").setAttribute('href', 'https://fonts.googleapis.com/css?family='+fEditGoogleFontValue);
 
             htmlOutput();
-            
-        });
 
-        if (firstLoad == false){
+            if (shouldDownload){
             var zip = new JSZip();
             
             // Generate a directory within the Zip file structure
@@ -467,127 +489,148 @@ document.addEventListener('DOMContentLoaded', function() {
                 fileTypeWhich = "jpg";
             }
 
-            // 64 x 64
-            setTimeout(function(){
-                fDisplay1.style.width = "64px";
-                fDisplay1.style.height = "64px";
-                fDisplay2.style.lineHeight = "64px";
-                if (borderLive){ 
-                    fDisplay1.style.height = "54px";
-                    fDisplay2.style.lineHeight = "54px"; 
-                    fDisplay1.style.border = borderWidth + "px " + borderStyle + " " + borderColor;
-                }
-                if (size64 == true){
-                    html2canvas(document.querySelector("#favicon_display"), { logging: true}).then(canvas => {
-                        // Encode images for download
-                        var favicon1 = canvas.toDataURL('image/'+ fileTypeWhich).replace(/^data:image\/(png|jpg);base64,/, '');
+            // Keep a stable decoy visible; resize the real favicon inside a clipped slot for capture
+            var previewContainer = document.getElementById("favicon_display_container");
+            var captureSource = document.getElementById("favicon_display");
+            var captureContent = document.getElementById("favicon_display_content");
+            var captureSlot = document.createElement("div");
+            captureSlot.id = "favicon_capture_slot";
+            var previewDecoy = captureSource.cloneNode(true);
+            previewDecoy.id = "favicon_display_decoy";
+            var decoyContent = previewDecoy.querySelector("#favicon_display_content");
+            if (decoyContent){
+                decoyContent.removeAttribute("id");
+                decoyContent.style.display = "table-cell";
+                decoyContent.style.verticalAlign = "middle";
+                // Match the resting preview; capture may have left a sized line-height on the source clone
+                decoyContent.style.lineHeight = "";
+            }
+            previewDecoy.style.width = "";
+            previewDecoy.style.height = "";
+            previewContainer.appendChild(previewDecoy);
+            previewContainer.appendChild(captureSlot);
+            captureSlot.appendChild(captureSource);
 
-                        img.file("favicon64x64." + fileTypeWhich, favicon1, {base64: true});             
+            function teardownCapturePreview(){
+                if (previewDecoy.parentNode){
+                    previewDecoy.parentNode.removeChild(previewDecoy);
+                }
+                if (captureSource && previewContainer){
+                    previewContainer.insertBefore(captureSource, previewContainer.firstChild);
+                }
+                if (captureSlot.parentNode){
+                    captureSlot.parentNode.removeChild(captureSlot);
+                }
+                if (captureSource){
+                    captureSource.style.width = "";
+                    captureSource.style.height = "";
+                    captureSource.style.border = borderLive ? (borderWidth + "px " + borderStyle + " " + borderColor) : "";
+                }
+                if (captureContent){
+                    captureContent.style.fontSize = fEditSizeValue + "px";
+                    captureContent.style.lineHeight = "";
+                }
+            }
+
+            function onDownloadError(){
+                teardownCapturePreview();
+                finishDownloading();
+            }
+
+            function captureFaviconAtSize(sizePx, fontSizePx, borderScale, borderedHeightPx){
+                return new Promise(function(resolve, reject){
+                    captureSource.style.width = sizePx + "px";
+                    captureSource.style.height = sizePx + "px";
+                    if (captureContent){
+                        captureContent.style.lineHeight = sizePx + "px";
+                        captureContent.style.fontSize = fontSizePx + "px";
+                    }
+                    if (borderLive){
+                        captureSource.style.height = borderedHeightPx + "px";
+                        if (captureContent){
+                            captureContent.style.lineHeight = borderedHeightPx + "px";
+                        }
+                        captureSource.style.border = (borderWidth * borderScale) + "px " + borderStyle + " " + borderColor;
+                    }
+
+                    setTimeout(function(){
+                        html2canvas(captureSource, {
+                            logging: true,
+                            width: sizePx,
+                            height: sizePx,
+                            windowWidth: 300,
+                            windowHeight: 300,
+                            scale: 1
+                        }).then(function(canvas){
+                            var encoded = canvas.toDataURL('image/'+ fileTypeWhich).replace(/^data:image\/(png|jpg);base64,/, '');
+                            resolve(encoded);
+                        }).catch(reject);
+                    }, 100);
+                });
+            }
+
+            function addFaviconToZip(filename, encoded){
+                img.file(filename, encoded, {base64: true});
+            }
+
+            // 64 x 64
+            function faviconCanvasSize64(){
+                if (size64 == true){
+                    captureFaviconAtSize(64, fEditSizeValue, 1, 54).then(function(favicon1){
+                        addFaviconToZip("favicon64x64." + fileTypeWhich, favicon1);
                         faviconCanvasSize16();
-                    });
+                    }).catch(onDownloadError);
                 } else {
                     faviconCanvasSize16();
                 }
-            }, 100);
-            
+            }
+
             // 16 x 16
             function faviconCanvasSize16(){
-                fDisplay1.style.width = "16px";
-                fDisplay1.style.height = "16px";
-                fDisplay2.style.lineHeight = "16px";
-                if (borderLive){ 
-                    fDisplay1.style.height = "14px";
-                    fDisplay2.style.lineHeight = "14px"; 
-                    fDisplay1.style.border = (borderWidth/4) + "px " + borderStyle + " " + borderColor;
-                }
-                fDisplay2.style.fontSize = (fEditSizeValue/4) + "px";
-                setTimeout(function(){
-                    if (size16 == true){
-                        html2canvas(document.querySelector("#favicon_display"), { logging: true}).then(canvas => {
-                            // Encode images for download
-                            var favicon2 = canvas.toDataURL('image/'+ fileTypeWhich).replace(/^data:image\/(png|jpg);base64,/, '');
-                            img.file("favicon16x16." + fileTypeWhich, favicon2, {base64: true});             
-                            faviconCanvasSize32();
-                        });
-                    } else {
+                if (size16 == true){
+                    captureFaviconAtSize(16, fEditSizeValue/4, 0.25, 14).then(function(favicon2){
+                        addFaviconToZip("favicon16x16." + fileTypeWhich, favicon2);
                         faviconCanvasSize32();
-                    }
-                }, 100);
+                    }).catch(onDownloadError);
+                } else {
+                    faviconCanvasSize32();
+                }
             }
 
             // 32 x 32
             function faviconCanvasSize32(){
-                fDisplay1.style.width = "32px";
-                fDisplay1.style.height = "32px";
-                fDisplay2.style.lineHeight = "32px";
-                if (borderLive){ 
-                    fDisplay1.style.height = "28px";
-                    fDisplay2.style.lineHeight = "28px";
-                    fDisplay1.style.border = (borderWidth/2) + "px " + borderStyle + " " + borderColor;
-                }
-                fDisplay2.style.fontSize = (fEditSizeValue/2) + "px";
-                setTimeout(function(){
-                    if (size32 == true){
-                        html2canvas(document.querySelector("#favicon_display"), { logging: true}).then(canvas => {
-                            // Encode images for download
-                            var favicon3 = canvas.toDataURL('image/'+ fileTypeWhich).replace(/^data:image\/(png|jpg);base64,/, '');
-                            img.file("favicon32x32." + fileTypeWhich, favicon3, {base64: true});             
-                            faviconCanvasSize128();
-                        });
-                    } else {
+                if (size32 == true){
+                    captureFaviconAtSize(32, fEditSizeValue/2, 0.5, 28).then(function(favicon3){
+                        addFaviconToZip("favicon32x32." + fileTypeWhich, favicon3);
                         faviconCanvasSize128();
-                    }
-                }, 100);
+                    }).catch(onDownloadError);
+                } else {
+                    faviconCanvasSize128();
+                }
             }
 
             // 128 x 128
             function faviconCanvasSize128(){
-                fDisplay1.style.width = "128px";
-                fDisplay1.style.height = "128px";
-                fDisplay2.style.lineHeight = "128px";
-                if (borderLive){ 
-                    fDisplay1.style.height = "108px";
-                    fDisplay2.style.lineHeight = "108px";
-                    fDisplay1.style.border = (borderWidth*2) + "px " + borderStyle + " " + borderColor; 
-                }                
-                fDisplay2.style.fontSize = (fEditSizeValue*2) + "px";
-                setTimeout(function(){
-                    if (size128 == true){
-                        html2canvas(document.querySelector("#favicon_display"), { logging: true}).then(canvas => {
-                            // Encode images for download
-                            var favicon4 = canvas.toDataURL('image/'+ fileTypeWhich).replace(/^data:image\/(png|jpg);base64,/, '');
-                            img.file("favicon128x128." + fileTypeWhich, favicon4, {base64: true});             
-                            faviconCanvasSize256();
-                        });
-                    } else {
+                if (size128 == true){
+                    captureFaviconAtSize(128, fEditSizeValue*2, 2, 108).then(function(favicon4){
+                        addFaviconToZip("favicon128x128." + fileTypeWhich, favicon4);
                         faviconCanvasSize256();
-                    }
-                }, 100);
+                    }).catch(onDownloadError);
+                } else {
+                    faviconCanvasSize256();
+                }
             }
 
             // 256 x 256
             function faviconCanvasSize256(){
-                fDisplay1.style.width = "256px";
-                fDisplay1.style.height = "256px";
-                fDisplay2.style.lineHeight = "256px";
-                if (borderLive){ 
-                    fDisplay1.style.height = "216px";
-                    fDisplay2.style.lineHeight = "216px";
-                    fDisplay1.style.border = (borderWidth*4) + "px " + borderStyle + " " + borderColor;
-                }
-                fDisplay2.style.fontSize = (fEditSizeValue*4) + "px";
-                setTimeout(function(){
-                    if (size256 == true){
-                        html2canvas(document.querySelector("#favicon_display"), { logging: true}).then(canvas => {
-                            // Encode images for download
-                            var favicon5 = canvas.toDataURL('image/'+ fileTypeWhich).replace(/^data:image\/(png|jpg);base64,/, '');
-                            img.file("favicon256x256." + fileTypeWhich, favicon5, {base64: true});             
-                            faviconCanvasReadMe();
-                        });
-                    } else {
+                if (size256 == true){
+                    captureFaviconAtSize(256, fEditSizeValue*4, 4, 216).then(function(favicon5){
+                        addFaviconToZip("favicon256x256." + fileTypeWhich, favicon5);
                         faviconCanvasReadMe();
-                    }
-                }, 100);
+                    }).catch(onDownloadError);
+                } else {
+                    faviconCanvasReadMe();
+                }
             }
 
             function faviconCanvasReadMe(){
@@ -612,48 +655,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
             }
 
-
-            //faviconHtmlContainer.remove();
             function downloadZip(){
-                fDisplay1.style.width = "64px";
-                fDisplay1.style.height = "64px";
-                fDisplay2.style.lineHeight = "64px";
-                fDisplay2.style.fontSize = fEditSizeValue + "px";
+                teardownCapturePreview();
                 // Generate the zip file asynchronously
                 zip.generateAsync({type:"blob"})
                 .then(function(content) {
                     // Force down of the Zip file
                     saveAs(content, "favicon-creator.zip");
-                });
+                    finishDownloading();
+                }).catch(finishDownloading);
             }
-        } else {
-            firstLoad = false;
-            /*setTimeout(function(){
-                html2canvas(document.querySelector("#favicon_display"), { logging: true}).then(canvas => {
-                    
-                    var faviconForPage = canvas.toDataURL();
-                    
-                    var faviconCodeForPage = 'var faviconPage = document.createElement("link");' +
-                                                'faviconPage.setAttribute("rel", "icon");' +
-                                                'faviconPage.type = "image/x-icon";' +
-                                                'faviconPage.href = "'+faviconForPage+'";' +
-                                                'var links = document.head.getElementsByTagName("link");' +
-                                                'for (i=0; i<links.length; i++) {' +
-                                                    'if (links[i].getAttribute("rel").match(/^(shortcut )?icon$/i)) {' +
-                                                        'document.head.removeChild(links[i]);' +
-                                                    '}' +
-                                                '}' +
-                                                'document.head.appendChild(faviconPage);';
 
-                    chrome.tabs.executeScript(null, {
-                        code: faviconCodeForPage
-                    });
-                    
-                });
-            }, 100);*/
+            faviconCanvasSize64();
+            }
+            
+        });
 
-
-        }
+        firstLoad = false;
 
     }
 
@@ -706,7 +724,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             if (totalSizeChecked > 0){
-                fEditDownloadButton.classList.remove("favicon_download_button_disabled");
+                if (!isDownloading){
+                    fEditDownloadButton.classList.remove("favicon_download_button_disabled");
+                }
                 fEditDownloadFeedback.innerText = "";
             } else {
                 fEditDownloadButton.classList.add("favicon_download_button_disabled");

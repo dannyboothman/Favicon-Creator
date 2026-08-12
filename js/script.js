@@ -1,38 +1,72 @@
 document.addEventListener('partialsLoaded', function() {
 
-    chrome.storage.local.get(['theme'], function(result) {
-        if (result.theme != undefined){
-            console.log("theme: " + result.theme);
-            if (result.theme == "dark"){
-                addDarkTheme();
-            }
-        }
-    });
-
-    /* Theme */
     var fEditTheme = document.getElementById("theme_toggle");
-    
-    fEditTheme.addEventListener('click', function() {
+    var mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    var currentTheme = "light";
 
-        var themeSelected = fEditTheme.getAttribute("class");
-        if (themeSelected == "fa fa-moon-o"){
-            chrome.storage.local.set({theme: "dark"});
-            addDarkTheme();
-        } else {
-            chrome.storage.local.set({theme: "light"});
-            fEditTheme.classList.add("fa-moon-o");
-            fEditTheme.classList.remove("fa-sun-o");
-            document.getElementById("theme_style").remove();
+    chrome.storage.local.get(["theme"], function(result) {
+        if (result.theme !== undefined) {
+            currentTheme = result.theme;
         }
-
+        applyTheme(currentTheme);
     });
 
+    fEditTheme.addEventListener("click", function() {
+        var next = { light: "dark", dark: "system", system: "light" };
+        currentTheme = next[currentTheme] || "light";
+        chrome.storage.local.set({ theme: currentTheme });
+        applyTheme(currentTheme);
+    });
 
-    function addDarkTheme(){
-        fEditTheme.classList.remove("fa-moon-o");
-        fEditTheme.classList.add("fa-sun-o");
+    function onSystemThemeChange() {
+        if (currentTheme === "system") {
+            applyResolvedTheme(mediaQuery.matches ? "dark" : "light");
+        }
+    }
+
+    if (mediaQuery.addEventListener) {
+        mediaQuery.addEventListener("change", onSystemThemeChange);
+    } else if (mediaQuery.addListener) {
+        mediaQuery.addListener(onSystemThemeChange);
+    }
+
+    function applyTheme(theme) {
+        currentTheme = theme;
+        updateThemeIcon(theme);
+
+        if (theme === "system") {
+            applyResolvedTheme(mediaQuery.matches ? "dark" : "light");
+        } else {
+            applyResolvedTheme(theme);
+        }
+    }
+
+    function updateThemeIcon(theme) {
+        fEditTheme.className = "fa";
+        if (theme === "dark") {
+            fEditTheme.classList.add("fa-moon-o");
+            fEditTheme.title = "Theme: Dark (click for System)";
+        } else if (theme === "system") {
+            fEditTheme.classList.add("fa-desktop");
+            fEditTheme.title = "Theme: System (click for Light)";
+        } else {
+            fEditTheme.classList.add("fa-sun-o");
+            fEditTheme.title = "Theme: Light (click for Dark)";
+        }
+    }
+
+    function applyResolvedTheme(resolved) {
+        var existing = document.getElementById("theme_style");
+        if (existing) {
+            existing.remove();
+        }
+
+        if (resolved !== "dark") {
+            return;
+        }
 
         var css = `
+            html,
             body{ 
                 background-color: #232323;
                 color: #FFF;
@@ -50,11 +84,11 @@ document.addEventListener('partialsLoaded', function() {
             }
         `;
 
-        head = document.head || document.getElementsByTagName('head')[0],
-        style = document.createElement('style');
+        var head = document.head || document.getElementsByTagName("head")[0];
+        var style = document.createElement("style");
 
-        style.type = 'text/css';
-        style.id = 'theme_style'
+        style.type = "text/css";
+        style.id = "theme_style";
         style.appendChild(document.createTextNode(css));
 
         head.appendChild(style);
