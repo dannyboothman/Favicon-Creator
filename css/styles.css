@@ -558,6 +558,13 @@ header {
   left: 20px;
 }
 
+.download_type_hint {
+  font-style: normal;
+  font-size: 0.85em;
+  opacity: 0.65;
+  font-weight: normal;
+}
+
 .checkbox_container input:checked + label:after {
   background-color: var(--main-color);
   border-color: var(--main-color);

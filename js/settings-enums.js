@@ -50,6 +50,10 @@
     fileType: FileType.PNG,
     fileHtml: FileOption.DISABLED,
     fileReadMe: FileOption.DISABLED,
+    fileSvg: FileOption.ENABLED,
+    fileIco: FileOption.ENABLED,
+    fileApple: FileOption.ENABLED,
+    fileManifest: FileOption.ENABLED,
   });
 
   global.FaviconSettings = Object.freeze({
