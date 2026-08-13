@@ -1,6 +1,8 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8" />
+    <title>Settings — Favicon Creator</title>
     <link rel="stylesheet" type="text/css" href="css/styles.css" />
     <link
       href="https://fonts.googleapis.com/css?family=Montserrat"
@@ -22,10 +24,17 @@
       <div class="container">
         <div class="text_section">
           <p><strong>Settings</strong></p>
-          <p>
-            Clear Local Storage:
-            <a class="button button_inline" id="clearLocalStorage">Clear</a>
-          </p>
+          <div class="settings_row">
+            <span class="settings_row_label">Clear history only</span>
+            <a class="button button_inline" id="clearHistory">Clear</a>
+          </div>
+          <div class="settings_row">
+            <span class="settings_row_label"
+              >Clear all local storage
+              <span class="settings_hint">(history, theme, and design)</span></span
+            >
+            <a class="button button_inline" id="clearLocalStorage">Clear all</a>
+          </div>
         </div>
         <div class="text_section">
           <p><strong>Buy Me a Coffee</strong></p>

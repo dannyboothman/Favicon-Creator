@@ -1,5 +1,13 @@
 
 document.addEventListener('DOMContentLoaded', function() {
+    var FontType = FaviconSettings.FontType;
+    var BgType = FaviconSettings.BgType;
+    var BgGradientType = FaviconSettings.BgGradientType;
+    var Border = FaviconSettings.Border;
+    var RadialShape = FaviconSettings.RadialShape;
+    var FileType = FaviconSettings.FileType;
+    var FileOption = FaviconSettings.FileOption;
+    var SettingsDefaults = FaviconSettings.Defaults;
 
     /* Var value set */
     var fEditTextColorValue;
@@ -15,48 +23,113 @@ document.addEventListener('DOMContentLoaded', function() {
     var fEditFileType2 = document.getElementById("download_type2");
     var fEditFileHtml = document.getElementById("download_html");
     var fEditFileReadMe = document.getElementById("download_readme");
+    var HISTORY_MAX = 30;
+    var HISTORY_KEY = "faviconHistory";
     /* End of Var value set */
+
+    function buildDesignSettings(result){
+        return {
+            fontType: result.fontType != undefined ? result.fontType : SettingsDefaults.fontType,
+            text: result.text != undefined ? result.text : "F",
+            fontAwesome: result.fontAwesome != undefined ? result.fontAwesome : "fa-thumbs-up",
+            fontFamily: result.fontFamily != undefined ? result.fontFamily : "Montserrat",
+            fontSize: result.fontSize != undefined ? result.fontSize : "30",
+            textColor: result.textColor != undefined ? result.textColor : "#FFFFFF",
+            textStyle1: result.textStyle1 === true,
+            textStyle2: result.textStyle2 === true,
+            textStyle3: result.textStyle3 === true,
+            textStyle4: result.textStyle4 === true,
+            bgType: result.bgType != undefined ? result.bgType : SettingsDefaults.bgType,
+            bgGradientType: result.bgGradientType != undefined ? result.bgGradientType : SettingsDefaults.bgGradientType,
+            bgRadialShape: result.bgRadialShape != undefined ? result.bgRadialShape : SettingsDefaults.bgRadialShape,
+            bgRadialPosition: result.bgRadialPosition != undefined ? result.bgRadialPosition : SettingsDefaults.bgRadialPosition,
+            bgColor: result.bgColor != undefined ? result.bgColor : "#FE145B",
+            bgColor2: result.bgColor2 != undefined ? result.bgColor2 : "#000000",
+            bgDegrees: result.bgDegrees != undefined ? result.bgDegrees : 90,
+            borderRadius: result.borderRadius != undefined ? result.borderRadius : "0",
+            border: result.border != undefined ? result.border : SettingsDefaults.border,
+            borderColor: result.borderColor != undefined ? result.borderColor : "#000000",
+            borderWidth: result.borderWidth != undefined ? result.borderWidth : SettingsDefaults.borderWidth
+        };
+    }
+
+    function settingsEqual(a, b){
+        if (!a || !b){
+            return false;
+        }
+        return JSON.stringify(a) === JSON.stringify(b);
+    }
+
+    function saveFaviconToHistory(result){
+        var settings = buildDesignSettings(result);
+        chrome.storage.local.get([HISTORY_KEY], function(stored){
+            var history = Array.isArray(stored[HISTORY_KEY]) ? stored[HISTORY_KEY].slice() : [];
+            if (history.length > 0 && settingsEqual(history[0].settings, settings)){
+                return;
+            }
+            history.unshift({
+                id: Date.now() + "-" + Math.floor(Math.random() * 100000),
+                createdAt: Date.now(),
+                settings: settings
+            });
+            history = history.slice(0, HISTORY_MAX).map(function(entry){
+                return {
+                    id: entry.id,
+                    createdAt: entry.createdAt,
+                    settings: entry.settings
+                };
+            });
+            var payload = {};
+            payload[HISTORY_KEY] = history;
+            chrome.storage.local.set(payload);
+        });
+    }
 
     // Set Local storage for checkboxes
     fEditFileType1.addEventListener("change", fChangeFileType1);    
     function fChangeFileType1(){
-        chrome.storage.local.set({fileType: 1});
+        chrome.storage.local.set({fileType: FileType.PNG});
         htmlOutput();
     }
     fEditFileType2.addEventListener("change", fChangeFileType2);    
     function fChangeFileType2(){
-        chrome.storage.local.set({fileType: 2});
+        chrome.storage.local.set({fileType: FileType.JPG});
         htmlOutput();
     }
     fEditFileHtml.addEventListener("change", fChangeFileHtml);
     function fChangeFileHtml(){
         if (fEditFileHtml.checked){
-            chrome.storage.local.set({fileHtml: 1});
+            chrome.storage.local.set({fileHtml: FileOption.ENABLED});
             htmlOutput();
         } else {
-            chrome.storage.local.set({fileHtml: 2});
+            chrome.storage.local.set({fileHtml: FileOption.DISABLED});
             document.getElementById("html_output_container").style.display = "none";
         }
     }
     fEditFileReadMe.addEventListener("change", fChangeFileReadMe);
     function fChangeFileReadMe(){
         if (fEditFileReadMe.checked){
-            chrome.storage.local.set({fileReadMe: 1});
+            chrome.storage.local.set({fileReadMe: FileOption.ENABLED});
         } else {
-            chrome.storage.local.set({fileReadMe: 2});
+            chrome.storage.local.set({fileReadMe: FileOption.DISABLED});
         }
     }
 
     var isDownloading = false;
 
+    function setDownloadButtonEnabled(enabled) {
+        fEditDownloadButton.disabled = !enabled;
+        fEditDownloadButton.classList.toggle("favicon_download_button_disabled", !enabled);
+    }
+
     fEditDownloadButton.addEventListener('click', function() {
-        if (isDownloading || fEditDownloadButton.classList.contains("favicon_download_button_disabled")){
+        if (isDownloading || fEditDownloadButton.disabled){
             return;
         }
         if (firstLoad === false){
             isDownloading = true;
             fEditDownloadButton.textContent = "Downloading";
-            fEditDownloadButton.classList.add("favicon_download_button_disabled");
+            setDownloadButtonEnabled(false);
         }
         getFavicon();
     });
@@ -65,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
         isDownloading = false;
         fEditDownloadButton.textContent = "Download";
         if (document.querySelector("input[name='download_size']:checked")){
-            fEditDownloadButton.classList.remove("favicon_download_button_disabled");
+            setDownloadButtonEnabled(true);
         }
     }
 
@@ -150,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         var borderLive = false;
 
-        chrome.storage.local.get(['fontType', 'textColor', 'bgColor', 'bgColor2', 'bgType', 'fontSize', 'borderRadius', 'text', 'textStyle1', 'textStyle2', 'textStyle3', 'textStyle4', 'fontFamily', 'fontAwesome', 'border', 'borderColor', 'borderWidth', 'download_size1', 'download_size2', 'download_size3', 'download_size4', 'download_size5', 'fileType', 'fileHtml', 'fileReadMe'], function(result) {
+        chrome.storage.local.get(['fontType', 'textColor', 'bgColor', 'bgColor2', 'bgType', 'bgGradientType', 'bgRadialShape', 'bgRadialPosition', 'bgDegrees', 'fontSize', 'borderRadius', 'text', 'textStyle1', 'textStyle2', 'textStyle3', 'textStyle4', 'fontFamily', 'fontAwesome', 'border', 'borderColor', 'borderWidth', 'download_size1', 'download_size2', 'download_size3', 'download_size4', 'download_size5', 'fileType', 'fileHtml', 'fileReadMe'], function(result) {
 
             var totalSizeChecked = 0;
 
@@ -228,23 +301,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (totalSizeChecked > 0){
                 if (!isDownloading){
-                    fEditDownloadButton.classList.remove("favicon_download_button_disabled");
+                    setDownloadButtonEnabled(true);
                 }
                 fEditDownloadFeedback.innerText = "";
             } else {
-                fEditDownloadButton.classList.add("favicon_download_button_disabled");
+                setDownloadButtonEnabled(false);
                 fEditDownloadFeedback.innerText = "You need at least one image size selected in order to download your Favicon";
             }
 
             // File HTML
             if (result.fileHtml != undefined){
-                console.log("File HTML: " + result.fileHtml);
-                if (result.fileHtml == 1){
+                if (result.fileHtml == FileOption.ENABLED){
                     fEditFileHtml.checked = true;
                     document.getElementById("html_output_container").style.display = "block";
                 } else {
                     fEditFileHtml.checked = false;
-                    console.log("Did this run")
                     document.getElementById("html_output_container").style.display = "none";
                 }
             } else {
@@ -256,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // File ReadMe
             if (result.fileReadMe != undefined){
                 //console.log("File Read Me: " + result.fileReadMe);
-                if (result.fileReadMe == 1){
+                if (result.fileReadMe == FileOption.ENABLED){
                     fEditFileReadMe.checked = true;
                 } else {
                     fEditFileReadMe.checked = false;
@@ -269,7 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // File Type
             if (result.fileType != undefined){
                 //console.log("File Type: " + result.fileType);
-                if (result.fileType == 1){
+                if (result.fileType == FileType.PNG){
                     fEditFileType1.checked = true;     
                 } else {
                     fEditFileType2.checked = true;
@@ -291,54 +362,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Text Style: Bold
             if (result.textStyle1 != undefined){
-                console.log("Bold: " + result.textStyle1);
                 if (result.textStyle1 == true){
                     fDisplay2.style.fontWeight = "bold";
                 } else {
                     fDisplay2.style.fontWeight = "normal";
                 }
             } else {
-                console.log("Bold Not set");
                 fDisplay2.style.fontWeight = "normal";
             }
 
             // Text Style: Italic
             if (result.textStyle2 != undefined){
-                console.log("Italic: " + result.textStyle2);
                 if (result.textStyle2 == true){
                     fDisplay2.style.fontStyle = "italic";
                 } else {
                     fDisplay2.style.fontStyle = "normal";
                 }
             } else {
-                console.log("Italic Not set");
                 fDisplay2.style.fontStyle = "normal";
             }
 
             // Text Style: Underline
             if (result.textStyle3 != undefined){
-                console.log("Underline: " + result.textStyle3);
                 if (result.textStyle3 == true){
                     fDisplay2.style.textDecoration = "underline";
                 } else {
                     fDisplay2.style.textDecoration = "inherit";
                 }
             } else {
-                console.log("Underline Not set");
                 fDisplay2.style.textDecoration = "inherit";
             }
 
             // Text Style: Strike
             if (result.textStyle3 != undefined && result.textStyle3 != true){
                 if (result.textStyle4 != undefined){
-                    console.log("Strike: " + result.textStyle4);
                     if (result.textStyle4 == true){
                         fDisplay2.style.textDecoration = "line-through";
                     } else {
                         fDisplay2.style.textDecoration = "inherit";
                     }
                 } else {
-                    console.log("Strike Not set");
                     fDisplay2.style.textDecoration = "inherit";
                 }
             }
@@ -355,10 +418,18 @@ document.addEventListener('DOMContentLoaded', function() {
             fDisplay1.style.backgroundColor = fEditBgColorValue;
 
             // Background Gradient
-            if (result.bgType != undefined && result.bgType == 2){
+            if (result.bgType != undefined && result.bgType == BgType.GRADIENT){
                 fEditBgColorValue = result.bgColor ? result.bgColor : "#FE145B";
-                fEditBgColorValue2 =  result.bgColor2 ? result.bgColor2 : "#000";
-                fDisplay1.style.background = `linear-gradient(90deg, ${fEditBgColorValue} 0%, ${fEditBgColorValue2} 78%)`;
+                fEditBgColorValue2 = result.bgColor2 ? result.bgColor2 : "#000";
+                var fEditBgDegreesValue = result.bgDegrees != undefined ? result.bgDegrees : 90;
+                var fEditBgGradientTypeValue = result.bgGradientType != undefined ? result.bgGradientType : SettingsDefaults.bgGradientType;
+                if (fEditBgGradientTypeValue == BgGradientType.RADIAL){
+                    var radialShape = result.bgRadialShape == RadialShape.ELLIPSE ? RadialShape.ELLIPSE : RadialShape.CIRCLE;
+                    var radialPosition = result.bgRadialPosition || SettingsDefaults.bgRadialPosition;
+                    fDisplay1.style.background = `radial-gradient(${radialShape} at ${radialPosition}, ${fEditBgColorValue} 0%, ${fEditBgColorValue2} 78%)`;
+                } else {
+                    fDisplay1.style.background = `linear-gradient(${fEditBgDegreesValue}deg, ${fEditBgColorValue} 0%, ${fEditBgColorValue2} 78%)`;
+                }
             }
 
             // Border Radius
@@ -369,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 //console.log("Border Radius NOT SET");
                 fEditBorderRadiusValue = "0";
             }
-            fDisplay1.style.borderRadius = fEditBorderRadiusValue + "px";
+            fDisplay1.style.borderRadius = fEditBorderRadiusValue + "%";
             
             // Font Size
             if (result.fontSize != undefined){
@@ -386,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Border
             // Border Display
             if (result.border != undefined){
-                if (result.border == "1"){
+                if (result.border == Border.ENABLED){
                     borderLive = true;
                     borderCreator();
                 }
@@ -419,7 +490,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Font Type
             if (result.fontType != undefined){
-                if (result.fontType == "2"){
+                if (result.fontType == FontType.FONT_AWESOME){
                     //console.log("Font Awesome is Checked");
                     addIcon();
                 } else {
@@ -467,8 +538,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             htmlOutput();
 
+            var designSettings = buildDesignSettings(result);
+
             if (!shouldDownload && typeof previewFaviconInActiveTab === "function") {
-                previewFaviconInActiveTab(fDisplay1);
+                previewFaviconInActiveTab(designSettings);
             }
 
             if (shouldDownload){
@@ -489,88 +562,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // What file type to download? 
             var fileTypeSelected = document.querySelector("input[name='download_type']:checked").getAttribute("id");
             var fileTypeWhich = "png";
+            var fileMime = "image/png";
             if (fileTypeSelected == "download_type2"){
                 fileTypeWhich = "jpg";
-            }
-
-            // Keep a stable decoy visible; resize the real favicon inside a clipped slot for capture
-            var previewContainer = document.getElementById("favicon_display_container");
-            var captureSource = document.getElementById("favicon_display");
-            var captureContent = document.getElementById("favicon_display_content");
-            var captureSlot = document.createElement("div");
-            captureSlot.id = "favicon_capture_slot";
-            var previewDecoy = captureSource.cloneNode(true);
-            previewDecoy.id = "favicon_display_decoy";
-            var decoyContent = previewDecoy.querySelector("#favicon_display_content");
-            if (decoyContent){
-                decoyContent.removeAttribute("id");
-                decoyContent.style.display = "table-cell";
-                decoyContent.style.verticalAlign = "middle";
-                // Match the resting preview; capture may have left a sized line-height on the source clone
-                decoyContent.style.lineHeight = "";
-            }
-            previewDecoy.style.width = "";
-            previewDecoy.style.height = "";
-            previewContainer.appendChild(previewDecoy);
-            previewContainer.appendChild(captureSlot);
-            captureSlot.appendChild(captureSource);
-
-            function teardownCapturePreview(){
-                if (previewDecoy.parentNode){
-                    previewDecoy.parentNode.removeChild(previewDecoy);
-                }
-                if (captureSource && previewContainer){
-                    previewContainer.insertBefore(captureSource, previewContainer.firstChild);
-                }
-                if (captureSlot.parentNode){
-                    captureSlot.parentNode.removeChild(captureSlot);
-                }
-                if (captureSource){
-                    captureSource.style.width = "";
-                    captureSource.style.height = "";
-                    captureSource.style.border = borderLive ? (borderWidth + "px " + borderStyle + " " + borderColor) : "";
-                }
-                if (captureContent){
-                    captureContent.style.fontSize = fEditSizeValue + "px";
-                    captureContent.style.lineHeight = "";
-                }
+                fileMime = "image/jpeg";
             }
 
             function onDownloadError(){
-                teardownCapturePreview();
                 finishDownloading();
             }
 
-            function captureFaviconAtSize(sizePx, fontSizePx, borderScale, borderedHeightPx){
-                return new Promise(function(resolve, reject){
-                    captureSource.style.width = sizePx + "px";
-                    captureSource.style.height = sizePx + "px";
-                    if (captureContent){
-                        captureContent.style.lineHeight = sizePx + "px";
-                        captureContent.style.fontSize = fontSizePx + "px";
-                    }
-                    if (borderLive){
-                        captureSource.style.height = borderedHeightPx + "px";
-                        if (captureContent){
-                            captureContent.style.lineHeight = borderedHeightPx + "px";
-                        }
-                        captureSource.style.border = (borderWidth * borderScale) + "px " + borderStyle + " " + borderColor;
-                    }
-
-                    setTimeout(function(){
-                        html2canvas(captureSource, {
-                            logging: true,
-                            width: sizePx,
-                            height: sizePx,
-                            windowWidth: 300,
-                            windowHeight: 300,
-                            scale: 1
-                        }).then(function(canvas){
-                            var encoded = canvas.toDataURL('image/'+ fileTypeWhich).replace(/^data:image\/(png|jpg);base64,/, '');
-                            resolve(encoded);
-                        }).catch(reject);
-                    }, 100);
-                });
+            function captureFaviconAtSize(sizePx){
+                return FaviconCanvas.renderToBase64(designSettings, sizePx, fileMime);
             }
 
             function addFaviconToZip(filename, encoded){
@@ -580,7 +583,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 64 x 64
             function faviconCanvasSize64(){
                 if (size64 == true){
-                    captureFaviconAtSize(64, fEditSizeValue, 1, 54).then(function(favicon1){
+                    captureFaviconAtSize(64).then(function(favicon1){
                         addFaviconToZip("favicon64x64." + fileTypeWhich, favicon1);
                         faviconCanvasSize16();
                     }).catch(onDownloadError);
@@ -592,7 +595,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 16 x 16
             function faviconCanvasSize16(){
                 if (size16 == true){
-                    captureFaviconAtSize(16, fEditSizeValue/4, 0.25, 14).then(function(favicon2){
+                    captureFaviconAtSize(16).then(function(favicon2){
                         addFaviconToZip("favicon16x16." + fileTypeWhich, favicon2);
                         faviconCanvasSize32();
                     }).catch(onDownloadError);
@@ -604,7 +607,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 32 x 32
             function faviconCanvasSize32(){
                 if (size32 == true){
-                    captureFaviconAtSize(32, fEditSizeValue/2, 0.5, 28).then(function(favicon3){
+                    captureFaviconAtSize(32).then(function(favicon3){
                         addFaviconToZip("favicon32x32." + fileTypeWhich, favicon3);
                         faviconCanvasSize128();
                     }).catch(onDownloadError);
@@ -616,7 +619,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 128 x 128
             function faviconCanvasSize128(){
                 if (size128 == true){
-                    captureFaviconAtSize(128, fEditSizeValue*2, 2, 108).then(function(favicon4){
+                    captureFaviconAtSize(128).then(function(favicon4){
                         addFaviconToZip("favicon128x128." + fileTypeWhich, favicon4);
                         faviconCanvasSize256();
                     }).catch(onDownloadError);
@@ -628,7 +631,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 256 x 256
             function faviconCanvasSize256(){
                 if (size256 == true){
-                    captureFaviconAtSize(256, fEditSizeValue*4, 4, 216).then(function(favicon5){
+                    captureFaviconAtSize(256).then(function(favicon5){
                         addFaviconToZip("favicon256x256." + fileTypeWhich, favicon5);
                         faviconCanvasReadMe();
                     }).catch(onDownloadError);
@@ -660,12 +663,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             function downloadZip(){
-                teardownCapturePreview();
                 // Generate the zip file asynchronously
                 zip.generateAsync({type:"blob"})
                 .then(function(content) {
                     // Force down of the Zip file
                     saveAs(content, "favicon-creator.zip");
+                    saveFaviconToHistory(result);
                     finishDownloading();
                 }).catch(finishDownloading);
             }
@@ -729,11 +732,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             if (totalSizeChecked > 0){
                 if (!isDownloading){
-                    fEditDownloadButton.classList.remove("favicon_download_button_disabled");
+                    setDownloadButtonEnabled(true);
                 }
                 fEditDownloadFeedback.innerText = "";
             } else {
-                fEditDownloadButton.classList.add("favicon_download_button_disabled");
+                setDownloadButtonEnabled(false);
                 fEditDownloadFeedback.innerText = "You need at least one image size selected in order to download your Favicon";
             }
             if (fEditFileHtml.checked){

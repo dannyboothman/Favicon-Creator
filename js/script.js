@@ -45,53 +45,18 @@ document.addEventListener('partialsLoaded', function() {
         fEditTheme.className = "fa";
         if (theme === "dark") {
             fEditTheme.classList.add("fa-moon-o");
-            fEditTheme.title = "Theme: Dark (click for System)";
+            fEditTheme.setAttribute("aria-label", "Theme: Dark (click for System)");
         } else if (theme === "system") {
             fEditTheme.classList.add("fa-desktop");
-            fEditTheme.title = "Theme: System (click for Light)";
+            fEditTheme.setAttribute("aria-label", "Theme: System (click for Light)");
         } else {
             fEditTheme.classList.add("fa-sun-o");
-            fEditTheme.title = "Theme: Light (click for Dark)";
+            fEditTheme.setAttribute("aria-label", "Theme: Light (click for Dark)");
         }
     }
 
     function applyResolvedTheme(resolved) {
-        var existing = document.getElementById("theme_style");
-        if (existing) {
-            existing.remove();
-        }
-
-        if (resolved !== "dark") {
-            return;
-        }
-
-        var css = `
-            html,
-            body{ 
-                background-color: #232323;
-                color: #FFF;
-            }
-            :root{ 
-                --main-color: #FE145B;
-                --main-color-hover: #bb1245;
-                --body-color: #fff;
-                
-                --main-border: #000000;
-                --light-color: #090A0B;
-                --light-color2: #FFF;
-                --nav-bg: #090A0B;
-                --nav-color: #FFF;
-            }
-        `;
-
-        var head = document.head || document.getElementsByTagName("head")[0];
-        var style = document.createElement("style");
-
-        style.type = "text/css";
-        style.id = "theme_style";
-        style.appendChild(document.createTextNode(css));
-
-        head.appendChild(style);
+        document.documentElement.setAttribute("data-theme", resolved);
     }
 
 });

@@ -186,6 +186,7 @@ textarea {
   --main-color: #fe145b;
   --main-color-hover: #bb1245;
   --body-color: #212121;
+  --bg-color: #fff;
   --main-border: #ddd;
   --light-color: #fff;
   --nav-bg: #eaeaea;
@@ -193,30 +194,36 @@ textarea {
   --light-color2: #fff;
 }
 
+[data-theme="dark"] {
+  --main-color: #fe145b;
+  --main-color-hover: #bb1245;
+  --body-color: #fff;
+  --bg-color: #232323;
+  --main-border: #000000;
+  --light-color: #090a0b;
+  --nav-bg: #090a0b;
+  --nav-color: #fff;
+  --light-color2: #fff;
+}
+
 html {
   overflow-x: hidden;
   max-width: 300px;
+  background-color: var(--bg-color);
 }
 
 body {
   width: 300px;
   max-width: 300px;
+  background-color: var(--bg-color);
   color: var(--body-color);
   font-family: "Montserrat", sans-serif;
   overflow-x: hidden;
 }
 
-/* html2canvas parks an iframe at left:-10000px which expands Chrome extension popups */
-.html2canvas-container {
-  position: fixed !important;
-  left: 0 !important;
-  top: 0 !important;
-  max-width: 300px !important;
-  max-height: 300px !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  overflow: hidden !important;
-  z-index: -1 !important;
+main {
+  max-height: 600px;
+  overflow-y: auto;
 }
 
 *,
@@ -294,6 +301,9 @@ header {
   line-height: 20px;
   cursor: pointer;
   color: var(--main-color);
+  background: transparent;
+  border: 0;
+  padding: 0;
 }
 
 /* Main Nav */
@@ -305,7 +315,7 @@ header {
 
 #main_nav a {
   float: left;
-  width: 25%;
+  width: 20%;
   background-color: var(--nav-bg);
   color: var(--nav-color);
   height: 40px;
@@ -341,41 +351,17 @@ header {
   position: relative;
 }
 
-#favicon_display_decoy {
-  height: 65px;
-  width: 65px;
-  display: table;
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  overflow: hidden;
-}
-
-#favicon_display_decoy > div {
-  display: table-cell;
-  vertical-align: middle;
-}
-
-#favicon_capture_slot {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 0;
-  height: 0;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: 0;
-}
-
 #favicon_display {
   height: 65px;
   width: 65px;
-  display: table;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin: 0 auto;
   position: relative;
   text-align: center;
   overflow: hidden;
+  white-space: nowrap;
 }
 
 .favicon_display_container_result #favicon_display {
@@ -383,8 +369,10 @@ header {
 }
 
 #favicon_display_content {
-  display: table-cell;
-  vertical-align: middle;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: 1;
 }
 
 /* Favicon Editor */
@@ -408,12 +396,23 @@ header {
 }
 
 .favicon_tab {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 40px;
   line-height: 40px;
-  width: 100%;
+  border: 0;
   border-bottom: 4px solid #ddd;
+  border-radius: 0;
   text-align: center;
   cursor: pointer;
   margin-bottom: 10px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: content-box;
 }
 
 .favicon_tab_active {
@@ -640,12 +639,12 @@ header {
 
 /* Font Awesome */
 
-#favion_edit_type_fontawesome label {
+#favicon_edit_type_fontawesome label {
   font-weight: bold;
   display: block;
 }
 
-#favion_edit_type_fontawesome {
+#favicon_edit_type_fontawesome {
   display: none;
 }
 
@@ -722,19 +721,8 @@ header {
 
 /* Border */
 
-#favicon_edit_border_container,
-#favicon_edit_border_warning {
+#favicon_edit_border_container {
   display: none;
-}
-
-#favicon_edit_border_warning {
-  color: #b36300;
-  background-color: #fff3cd;
-  border: 1px solid #e8d390;
-  padding: 5px;
-  line-height: 15px;
-  border-radius: 4px;
-  margin-top: 10px;
 }
 
 #favicon_edit_border {
@@ -781,6 +769,115 @@ header {
   margin-bottom: 20px;
 }
 
+.favicon_history_empty {
+  text-align: center;
+  color: var(--body-color);
+  opacity: 0.7;
+  padding: 24px 10px;
+}
+
+.favicon_history_row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--main-border);
+}
+
+.favicon_history_row:last-child {
+  border-bottom: none;
+}
+
+.favicon_history_thumb {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  border: 1px solid var(--main-border);
+  background: var(--nav-bg);
+  overflow: hidden;
+  position: relative;
+  padding: 3px;
+}
+
+.favicon_history_preview {
+  width: 65px;
+  height: 65px;
+  transform: scale(0.4923076923); /* 32 / 65 to fit inside padded thumb */
+  transform-origin: top left;
+  pointer-events: none;
+}
+
+.favicon_history_preview_display {
+  width: 65px;
+  height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.favicon_history_preview_content {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.favicon_history_meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.favicon_history_title {
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.favicon_history_time {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+.favicon_history_actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.button.favicon_history_load,
+.favicon_history_delete {
+  box-sizing: border-box;
+  width: 30px;
+  height: 30px;
+  line-height: 28px;
+  padding: 0;
+  margin-left: 0;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.favicon_history_delete {
+  border-color: var(--main-border);
+  background: var(--nav-bg);
+  color: var(--body-color);
+}
+
+.favicon_history_delete:hover {
+  background-color: var(--main-color);
+  border-color: var(--main-color);
+  color: var(--light-color2);
+}
+
 #favicon_download_feedback {
   text-align: center;
   margin-top: 10px;
@@ -789,21 +886,31 @@ header {
 }
 
 .button {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   width: 100px;
+  border: 0;
   border-radius: 4px;
-  line-height: 30px;
+  line-height: 1;
   height: 30px;
   text-align: center;
   color: var(--light-color2);
   background-color: var(--main-color);
   text-decoration: none;
   cursor: pointer;
+  font: inherit;
+  padding: 0;
 }
 
 .button_inline {
-  display: inline-block;
+  display: inline-flex;
+  width: auto;
+  min-width: 72px;
+  padding: 0 12px;
   margin-left: 5px;
+  vertical-align: middle;
 }
 
 .button:hover {
@@ -814,9 +921,11 @@ header {
   margin: 20px auto;
 }
 
+#favicon_download_button:disabled,
 #favicon_download_button.favicon_download_button_disabled {
   background-color: var(--main-border) !important;
   color: var(--body-color) !important;
+  cursor: not-allowed;
   pointer-events: none;
 }
 
@@ -857,6 +966,33 @@ pre > code {
 }
 
 /* Settings */
+
+.settings_row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.settings_row_label {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.settings_row .button_inline {
+  flex-shrink: 0;
+  margin-left: 0;
+}
+
+.settings_hint {
+  display: block;
+  opacity: 0.7;
+  font-weight: normal;
+  font-size: 12px;
+  margin-top: 2px;
+}
 
 .text_section {
   border-top: 1px dashed var(--main-border);

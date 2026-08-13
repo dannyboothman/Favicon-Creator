@@ -1,14 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
+        <meta charset="utf-8" />
+        <title>Favicon Creator</title>
         <link rel="stylesheet" type="text/css" href="css/styles.css" />
         <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" />
         <link rel="stylesheet" id="googleFontStylesheet" />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" />
         <script src="js/partials.js"></script>
+        <script src="js/settings-enums.js"></script>
         <script src="js/fontawesome-icons.js"></script>
+        <script src="js/fontawesome-paths.js"></script>
         <script src="js/google-fonts.js"></script>
-        <script src="js/html2canvas.js"></script>
+        <script src="js/favicon-canvas.js"></script>
         <script src="js/tab-favicon-preview.js"></script>
         <script src="js/popup.js"></script>
         <script src="js/script.js"></script>
@@ -22,14 +26,14 @@
 
             <div id="favicon_edit_container">
 
-                <div id="favicon_tab_container">
-                    <div id="favicon_tab1" class="favicon_tab favicon_tab_active">Visual</div>
-                    <div id="favicon_tab2" class="favicon_tab">Background</div>
-                    <div id="favicon_tab3" class="favicon_tab">Other</div>
+                <div id="favicon_tab_container" role="tablist" aria-label="Favicon editor sections">
+                    <button type="button" role="tab" id="favicon_tab1" class="favicon_tab favicon_tab_active" aria-selected="true" aria-controls="favicon_edit_container1" tabindex="0">Visual</button>
+                    <button type="button" role="tab" id="favicon_tab2" class="favicon_tab" aria-selected="false" aria-controls="favicon_edit_container2" tabindex="-1">Background</button>
+                    <button type="button" role="tab" id="favicon_tab3" class="favicon_tab" aria-selected="false" aria-controls="favicon_edit_container3" tabindex="-1">Other</button>
                 </div>
 
 
-                <div id="favicon_edit_container1">
+                <div id="favicon_edit_container1" role="tabpanel" aria-labelledby="favicon_tab1">
 
                     <div class="hide_overflow">
                         <div class="input_container input_container_50">
@@ -70,7 +74,7 @@
                         </div>
                     </div>
 
-                    <div id="favion_edit_type_text">
+                    <div id="favicon_edit_type_text">
                         <div class="hide_overflow">
                             <div class="input_container input_container_50">
                                 <label>Text</label>
@@ -85,7 +89,7 @@
                         </div>
                     </div>
 
-                    <div id="favion_edit_type_fontawesome">
+                    <div id="favicon_edit_type_fontawesome">
                         <label>FontAwesome</label>
                         <div id="favicon_edit_font_awesome_button">Please Select <i class="fa fa-caret-down" aria-hidden="true"></i></div>
                         <div id="favicon_edit_font_awesome_container">
@@ -95,8 +99,9 @@
 
                 </div>
 
-                <div id="favicon_edit_container2">
-                    
+                <div id="favicon_edit_container2" role="tabpanel" aria-labelledby="favicon_tab2" hidden>
+                     
+
                     <div class="hide_overflow">
                         <div class="input_container">
                             <div class="width_50">
@@ -139,15 +144,15 @@
                                         <label for="favicon_edit_background_type_gradient_type_linear"><span>Linear</span></label>
                                     </div>
                                 </div>
-                                <!--<div class="width_50">
+                                <div class="width_50">
                                     <div class="checkbox_container">
                                         <input type="radio" id="favicon_edit_background_type_gradient_type_radial" name="favicon_edit_background_gradient_type" />
                                         <label for="favicon_edit_background_type_gradient_type_radial"><span>Radial</span></label>
                                     </div>
-                                </div>-->
+                                </div>
                             </div>
 
-                            <div class="width_50">
+                            <div class="width_50" id="favicon_edit_linear_degs_container">
                                 <div class="input_container">
                                     <label><span id="favicon_edit_linear_degs_text">90</span>&deg;</label>
                                     <input type="range" min="0" max="360" value="90" id="favicon_edit_linear_degs" />
@@ -156,11 +161,47 @@
 
                         </div>
 
+                        <div id="favicon_edit_radial_options_container" style="display: none; margin-top: 10px;">
+                            <div class="hide_overflow">
+                                <div class="width_50">
+                                    <p><strong>Shape</strong></p>
+                                    <div class="width_50">
+                                        <div class="checkbox_container">
+                                            <input type="radio" id="favicon_edit_radial_shape_circle" name="favicon_edit_radial_shape" checked />
+                                            <label for="favicon_edit_radial_shape_circle"><span>Circle</span></label>
+                                        </div>
+                                    </div>
+                                    <div class="width_50">
+                                        <div class="checkbox_container">
+                                            <input type="radio" id="favicon_edit_radial_shape_ellipse" name="favicon_edit_radial_shape" />
+                                            <label for="favicon_edit_radial_shape_ellipse"><span>Ellipse</span></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="width_50">
+                                    <div class="input_container">
+                                        <label>Position</label>
+                                        <select id="favicon_edit_radial_position">
+                                            <option value="center">Center</option>
+                                            <option value="top">Top</option>
+                                            <option value="bottom">Bottom</option>
+                                            <option value="left">Left</option>
+                                            <option value="right">Right</option>
+                                            <option value="top left">Top left</option>
+                                            <option value="top right">Top right</option>
+                                            <option value="bottom left">Bottom left</option>
+                                            <option value="bottom right">Bottom right</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                 </div>
 
-                <div id="favicon_edit_container3">
+                <div id="favicon_edit_container3" role="tabpanel" aria-labelledby="favicon_tab3" hidden>
                     <div class="hide_overflow">
                         <div class="width_50">
                             <div class="input_container">
@@ -178,12 +219,6 @@
                                 <div id="favicon_edit_border2" class="favicon_edit_border_item favicon_edit_border_item_active">Disabled</div>
                             </div>
                         </div>
-                    </div>
-
-                    <div id="favicon_edit_border_warning">
-                        <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Scaling Issue</strong>
-                        <br />
-                        There is a scaling issue when generating borders on larger favicons. 
                     </div>
 
                     <div id="favicon_edit_border_container">

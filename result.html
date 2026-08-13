@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-        <title>helo</title>
+        <meta charset="utf-8" />
+        <title>Download — Favicon Creator</title>
         <link rel="stylesheet" type="text/css" href="css/styles.css" />
         <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" />
         <link rel="stylesheet" id="googleFontStylesheet" />
@@ -9,7 +10,9 @@
         <script src="js/jszip.min.js"></script>
         <script src="js/FileSaver.js"></script>
         <script src="js/partials.js"></script>
-        <script src="js/html2canvas.js"></script>
+        <script src="js/settings-enums.js"></script>
+        <script src="js/fontawesome-paths.js"></script>
+        <script src="js/favicon-canvas.js"></script>
         <script src="js/tab-favicon-preview.js"></script>
         <script src="js/result.js"></script>
         <script src="js/script.js"></script>
@@ -71,8 +74,8 @@
                     <pre id="html_output_pre"><code id="html_output"></code></pre>
                 </div>
                 <div class="text_section">
-                    <div id="favicon_download_feedback"></div>
-                    <div class="button" id="favicon_download_button">Download</div>
+                    <div id="favicon_download_feedback" role="status" aria-live="polite"></div>
+                    <button type="button" class="button" id="favicon_download_button">Download</button>
                 </div>
             </div>
         </main>
