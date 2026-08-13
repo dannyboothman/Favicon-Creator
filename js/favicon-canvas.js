@@ -43,50 +43,54 @@
   var FA_MID_Y = (FA_ASCENT + FA_DESCENT) / 2;
 
   function normalizeSettings(settings) {
-    settings = settings || {};
+    var s =
+      global.FaviconDesign && global.FaviconDesign.buildDesignSettings
+        ? global.FaviconDesign.buildDesignSettings(settings)
+        : {
+            fontType: Defaults.fontType,
+            text: "F",
+            fontAwesome: "fa-thumbs-up",
+            fontFamily: "Montserrat",
+            fontSize: 30,
+            textColor: "#FFFFFF",
+            textStyle1: false,
+            textStyle2: false,
+            textStyle3: false,
+            textStyle4: false,
+            bgType: Defaults.bgType,
+            bgGradientType: Defaults.bgGradientType,
+            bgRadialShape: Defaults.bgRadialShape,
+            bgRadialPosition: Defaults.bgRadialPosition,
+            bgColor: "#FE145B",
+            bgColor2: "#000000",
+            bgDegrees: 90,
+            borderRadius: 0,
+            border: Defaults.border,
+            borderColor: "#000000",
+            borderWidth: Defaults.borderWidth,
+          };
     return {
-      fontType:
-        settings.fontType != undefined ? settings.fontType : Defaults.fontType,
-      text: settings.text != undefined ? settings.text : "F",
-      fontAwesome:
-        settings.fontAwesome != undefined
-          ? settings.fontAwesome
-          : "fa-thumbs-up",
-      fontFamily: settings.fontFamily || "Montserrat",
-      fontSize: Number(settings.fontSize != undefined ? settings.fontSize : 30),
-      textColor: settings.textColor || "#FFFFFF",
-      textStyle1: settings.textStyle1 === true,
-      textStyle2: settings.textStyle2 === true,
-      textStyle3: settings.textStyle3 === true,
-      textStyle4: settings.textStyle4 === true,
-      bgType: settings.bgType != undefined ? settings.bgType : Defaults.bgType,
-      bgGradientType:
-        settings.bgGradientType != undefined
-          ? settings.bgGradientType
-          : Defaults.bgGradientType,
-      bgRadialShape:
-        settings.bgRadialShape != undefined
-          ? settings.bgRadialShape
-          : Defaults.bgRadialShape,
-      bgRadialPosition:
-        settings.bgRadialPosition != undefined
-          ? settings.bgRadialPosition
-          : Defaults.bgRadialPosition,
-      bgColor: settings.bgColor || "#FE145B",
-      bgColor2: settings.bgColor2 || "#000000",
-      bgDegrees: Number(
-        settings.bgDegrees != undefined ? settings.bgDegrees : 90
-      ),
-      borderRadius: Number(
-        settings.borderRadius != undefined ? settings.borderRadius : 0
-      ),
-      border: settings.border != undefined ? settings.border : Defaults.border,
-      borderColor: settings.borderColor || "#000000",
-      borderWidth: Number(
-        settings.borderWidth != undefined
-          ? settings.borderWidth
-          : Defaults.borderWidth
-      ),
+      fontType: s.fontType,
+      text: s.text,
+      fontAwesome: s.fontAwesome,
+      fontFamily: s.fontFamily,
+      fontSize: Number(s.fontSize),
+      textColor: s.textColor,
+      textStyle1: s.textStyle1 === true,
+      textStyle2: s.textStyle2 === true,
+      textStyle3: s.textStyle3 === true,
+      textStyle4: s.textStyle4 === true,
+      bgType: s.bgType,
+      bgGradientType: s.bgGradientType,
+      bgRadialShape: s.bgRadialShape,
+      bgRadialPosition: s.bgRadialPosition,
+      bgColor: s.bgColor,
+      bgColor2: s.bgColor2,
+      bgDegrees: Number(s.bgDegrees),
+      borderRadius: Number(s.borderRadius),
+      border: s.border,
+      borderColor: s.borderColor,
+      borderWidth: Number(s.borderWidth),
     };
   }
 

@@ -1,34 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   var FontType = FaviconSettings.FontType;
-  var BgType = FaviconSettings.BgType;
-  var BgGradientType = FaviconSettings.BgGradientType;
-  var Border = FaviconSettings.Border;
-  var RadialShape = FaviconSettings.RadialShape;
-  var SettingsDefaults = FaviconSettings.Defaults;
   var HISTORY_KEY = "faviconHistory";
-  var DESIGN_KEYS = [
-    "fontType",
-    "text",
-    "fontAwesome",
-    "fontFamily",
-    "fontSize",
-    "textColor",
-    "textStyle1",
-    "textStyle2",
-    "textStyle3",
-    "textStyle4",
-    "bgType",
-    "bgGradientType",
-    "bgRadialShape",
-    "bgRadialPosition",
-    "bgColor",
-    "bgColor2",
-    "bgDegrees",
-    "borderRadius",
-    "border",
-    "borderColor",
-    "borderWidth",
-  ];
   var historyListEl = document.getElementById("favicon_history_list");
   var historyEmptyEl = document.getElementById("favicon_history_empty");
 
@@ -79,7 +51,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function buildHistoryThumb(settings) {
-    settings = settings || {};
     var thumbWrap = document.createElement("div");
     thumbWrap.className = "favicon_history_thumb";
 
@@ -92,87 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var content = document.createElement("div");
     content.className = "favicon_history_preview_content";
 
-    var fontType = settings.fontType != undefined ? settings.fontType : SettingsDefaults.fontType;
-    var textColor = settings.textColor || "#FFFFFF";
-    var fontSize = settings.fontSize != undefined ? settings.fontSize : "30";
-    var fontFamily = settings.fontFamily || "Montserrat";
-    var borderRadius = settings.borderRadius != undefined ? settings.borderRadius : "0";
-    var bgType = settings.bgType != undefined ? settings.bgType : SettingsDefaults.bgType;
-    var bgColor = settings.bgColor || "#FE145B";
-    var bgColor2 = settings.bgColor2 || "#000000";
-    var bgDegrees = settings.bgDegrees != undefined ? settings.bgDegrees : 90;
-    var bgGradientType =
-      settings.bgGradientType != undefined
-        ? settings.bgGradientType
-        : SettingsDefaults.bgGradientType;
-    var bgRadialShape =
-      settings.bgRadialShape != undefined
-        ? settings.bgRadialShape
-        : SettingsDefaults.bgRadialShape;
-    var bgRadialPosition =
-      settings.bgRadialPosition != undefined
-        ? settings.bgRadialPosition
-        : SettingsDefaults.bgRadialPosition;
-    var border =
-      settings.border != undefined ? settings.border : SettingsDefaults.border;
-    var borderColor = settings.borderColor || "#000000";
-    var borderWidth =
-      settings.borderWidth != undefined
-        ? settings.borderWidth
-        : SettingsDefaults.borderWidth;
-
-    content.style.color = textColor;
-    content.style.fontSize = fontSize + "px";
-    content.style.fontWeight = settings.textStyle1 === true ? "bold" : "normal";
-    content.style.fontStyle = settings.textStyle2 === true ? "italic" : "normal";
-    if (settings.textStyle3 === true) {
-      content.style.textDecoration = "underline";
-    } else if (settings.textStyle4 === true) {
-      content.style.textDecoration = "line-through";
-    } else {
-      content.style.textDecoration = "inherit";
-    }
-
-    if (fontType == FontType.FONT_AWESOME) {
-      content.innerHTML =
-        '<i class="fa ' + (settings.fontAwesome || "fa-thumbs-up") + '"></i>';
-    } else {
-      content.textContent = settings.text || "F";
-      content.style.fontFamily = fontFamily;
-    }
-
-    display.style.borderRadius = borderRadius + "%";
-    if (bgType == BgType.GRADIENT) {
-      if (bgGradientType == BgGradientType.RADIAL) {
-        var radialShape =
-          bgRadialShape == RadialShape.ELLIPSE ? "ellipse" : "circle";
-        display.style.background =
-          "radial-gradient(" +
-          radialShape +
-          " at " +
-          bgRadialPosition +
-          ", " +
-          bgColor +
-          " 0%, " +
-          bgColor2 +
-          " 78%)";
-      } else {
-        display.style.background =
-          "linear-gradient(" +
-          bgDegrees +
-          "deg, " +
-          bgColor +
-          " 0%, " +
-          bgColor2 +
-          " 78%)";
-      }
-    } else {
-      display.style.backgroundColor = bgColor;
-    }
-
-    if (border == Border.ENABLED) {
-      display.style.border = borderWidth + "px solid " + borderColor;
-    }
+    FaviconDesign.applyPreviewStyles(display, content, settings);
 
     display.appendChild(content);
     stage.appendChild(display);
@@ -184,15 +75,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!entry || !entry.settings) {
       return;
     }
-    var payload = {};
-    DESIGN_KEYS.forEach(function (key) {
-      if (entry.settings[key] !== undefined) {
-        payload[key] = entry.settings[key];
+    chrome.storage.local.set(
+      FaviconDesign.pickDesignPayload(entry.settings),
+      function () {
+        location.href = "popup.html";
       }
-    });
-    chrome.storage.local.set(payload, function () {
-      location.href = "popup.html";
-    });
+    );
   }
 
   function deleteHistoryEntry(entryId) {

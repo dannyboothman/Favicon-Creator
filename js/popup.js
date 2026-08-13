@@ -178,43 +178,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function buildBgGradientCss(
-    color1,
-    color2,
-    degrees,
-    gradientType,
-    radialShape,
-    radialPosition,
-  ) {
-    if (gradientType == BgGradientType.RADIAL) {
-      var shape =
-        radialShape == RadialShape.ELLIPSE
-          ? RadialShape.ELLIPSE
-          : RadialShape.CIRCLE;
-      var position = radialPosition || SettingsDefaults.bgRadialPosition;
-      return (
-        "radial-gradient(" +
-        shape +
-        " at " +
-        position +
-        ", " +
-        color1 +
-        " 0%, " +
-        color2 +
-        " 78%)"
-      );
-    }
-    return (
-      "linear-gradient(" +
-      degrees +
-      "deg, " +
-      color1 +
-      " 0%, " +
-      color2 +
-      " 78%)"
-    );
-  }
-
   fBackgroundType1.addEventListener("click", function () {
     fBackgroundType2Container1.style.display = "none";
     fBackgroundType2Container2.style.display = "none";
@@ -606,31 +569,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     chrome.storage.local.get(
-      [
-        "fontType",
-        "textColor",
-        "bgColor",
-        "bgColor2",
-        "bgType",
-        "bgGradientType",
-        "bgRadialShape",
-        "bgRadialPosition",
-        "bgDegrees",
-        "fontSize",
-        "borderRadius",
-        "text",
-        "textStyle1",
-        "textStyle2",
-        "textStyle3",
-        "textStyle4",
-        "fontFamily",
-        "fontAwesome",
-        "tab",
-        "border",
-        "borderColor",
-        "borderWidth",
-      ],
+      FaviconDesign.KEYS.concat(["tab"]),
       function (result) {
+        var settings = FaviconDesign.applyPreviewStyles(
+          fDisplay1,
+          fDisplay2,
+          result,
+          { googleFontStylesheetId: "googleFontStylesheet" },
+        );
+
         // Tab
         if (result.tab != undefined) {
           var savedTab = parseInt(result.tab, 10);
@@ -639,313 +586,119 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         }
 
-        // Text Color
-        if (result.textColor != undefined) {
-          //console.log("Text Color: " + result.textColor);
-          fEditTextColorValue = result.textColor;
-        } else {
-          //console.log("Text Color NOT SET");
-          fEditTextColorValue = "#FFFFFF";
-        }
+        // Sync form controls from normalized settings
+        fEditTextColorValue = settings.textColor;
         fEditTextColor.value = fEditTextColorValue;
-        fDisplay2.style.color = fEditTextColorValue;
 
-        // Text Style: Bold
-        if (result.textStyle1 != undefined) {
-          //console.log("Bold: " + result.textStyle1);
-          if (result.textStyle1 == true) {
-            fDisplay2.style.fontWeight = "bold";
-            fEditTextStyle1.classList.add(
-              "favicon_edit_text_style_item_selected",
-            );
-          } else {
-            fDisplay2.style.fontWeight = "normal";
-          }
-        } else {
-          //console.log("Bold Not set");
-          fDisplay2.style.fontWeight = "normal";
-        }
+        fEditTextStyle1.classList.toggle(
+          "favicon_edit_text_style_item_selected",
+          settings.textStyle1,
+        );
+        fEditTextStyle2.classList.toggle(
+          "favicon_edit_text_style_item_selected",
+          settings.textStyle2,
+        );
+        fEditTextStyle3.classList.toggle(
+          "favicon_edit_text_style_item_selected",
+          settings.textStyle3,
+        );
+        fEditTextStyle4.classList.toggle(
+          "favicon_edit_text_style_item_selected",
+          settings.textStyle4,
+        );
 
-        // Text Style: Italic
-        if (result.textStyle2 != undefined) {
-          //console.log("Italic: " + result.textStyle2);
-          if (result.textStyle2 == true) {
-            fDisplay2.style.fontStyle = "italic";
-            fEditTextStyle2.classList.add(
-              "favicon_edit_text_style_item_selected",
-            );
-          } else {
-            fDisplay2.style.fontStyle = "normal";
-          }
-        } else {
-          //console.log("Italic Not set");
-          fDisplay2.style.fontStyle = "normal";
-        }
-
-        // Text Style: Underline
-        if (result.textStyle3 != undefined) {
-          //console.log("Underline: " + result.textStyle3);
-          if (result.textStyle3 == true) {
-            fDisplay2.style.textDecoration = "underline";
-            fEditTextStyle3.classList.add(
-              "favicon_edit_text_style_item_selected",
-            );
-          } else {
-            fDisplay2.style.textDecoration = "inherit";
-          }
-        } else {
-          //console.log("Underline Not set");
-          fDisplay2.style.textDecoration = "inherit";
-        }
-
-        // Text Style: Strike
-        if (result.textStyle3 != undefined && result.textStyle3 != true) {
-          if (result.textStyle4 != undefined) {
-            //console.log("Strike: " + result.textStyle4);
-            if (result.textStyle4 == true) {
-              fDisplay2.style.textDecoration = "line-through";
-              fEditTextStyle4.classList.add(
-                "favicon_edit_text_style_item_selected",
-              );
-            } else {
-              fDisplay2.style.textDecoration = "inherit";
-            }
-          } else {
-            //console.log("Strike Not set");
-            fDisplay2.style.textDecoration = "inherit";
-          }
-        } else {
-          fEditTextStyle4.classList.remove(
-            "favicon_edit_text_style_item_selected",
-          );
-        }
-
-        // Font Size
-        if (result.fontSize != undefined) {
-          //console.log("Font Size: " + result.fontSize);
-          fEditSizeValue = result.fontSize;
-        } else {
-          //console.log("Font Size NOT SET");
-          fEditSizeValue = "30";
-        }
+        fEditSizeValue = settings.fontSize;
         fEditSize.value = fEditSizeValue;
-        fDisplay2.style.fontSize = fEditSizeValue + "px";
         document.getElementById("favicon_edit_font_size_text").innerHTML =
           "(" + fEditSizeValue + "px)";
 
-        // Font Type
-        if (result.fontType != undefined) {
-          if (result.fontType == FontType.FONT_AWESOME) {
-            //console.log("Font Awesome is Checked");
-            var textStyleItems = document.querySelectorAll(
-              ".favicon_edit_text_style_item",
+        fEditGoogleFontValue = settings.fontFamily;
+        fEditGoogleFont.value = fEditGoogleFontValue;
+
+        fEditTextValue = settings.text;
+        fEditText.value = fEditTextValue;
+
+        if (settings.fontType == FontType.FONT_AWESOME) {
+          var textStyleItems = document.querySelectorAll(
+            ".favicon_edit_text_style_item",
+          );
+          for (var i = 0; i < textStyleItems.length; i++) {
+            textStyleItems[i].classList.add(
+              "favicon_edit_text_style_item_disabled",
             );
-            for (var i = 0; i < textStyleItems.length; i++) {
-              textStyleItems[i].classList.add(
-                "favicon_edit_text_style_item_disabled",
-              );
-            }
-            addIcon();
-          } else {
-            addText();
           }
-        } else {
-          addText();
-        }
-
-        function addText() {
-          // Text
-          if (result.text != undefined) {
-            //console.log("Text: " + result.text);
-            fEditTextValue = result.text;
-          } else {
-            //console.log("Text NOT SET");
-            fEditTextValue = "F";
-          }
-          fEditText.value = fEditTextValue;
-          fDisplay2.innerHTML = fEditTextValue;
-        }
-
-        function addIcon() {
-          // Font Awesome
           fEditType1Container.style.display = "none";
           fEditType2Container.style.display = "block";
           fEditType2.checked = true;
-
-          if (result.fontAwesome != undefined) {
-            //console.log("Font Awesome: " + result.fontAwesome);
-            fEditText = '<i class="fa ' + result.fontAwesome + '"></i>';
-            fEditText2 = formatFontAwesomeLabel(result.fontAwesome);
-          } else {
-            //console.log("Font Awesome NOT SET");
-            fEditText = '<i class="fa fa-thumbs-up"></i>';
-            fEditText2 = formatFontAwesomeLabel("fa-thumbs-up");
-          }
           fontAwesomeButton.innerHTML =
-            fEditText + fEditText2 + " <i class='fa fa-caret-down'></i>";
-          fDisplay2.innerHTML = fEditText;
-        }
-
-        // Font Family
-        if (result.fontFamily != undefined) {
-          //console.log("Font Family: " + result.fontFamily);
-          fEditGoogleFontValue = result.fontFamily;
+            '<i class="fa ' +
+            settings.fontAwesome +
+            '"></i>' +
+            formatFontAwesomeLabel(settings.fontAwesome) +
+            " <i class='fa fa-caret-down'></i>";
         } else {
-          //console.log("Font Family NOT SET");
-          fEditGoogleFontValue = "Montserrat";
-        }
-        fEditGoogleFont.value = fEditGoogleFontValue;
-        fDisplay2.style.fontFamily = fEditGoogleFontValue;
-        document
-          .getElementById("googleFontStylesheet")
-          .setAttribute(
-            "href",
-            "https://fonts.googleapis.com/css?family=" + fEditGoogleFontValue,
+          var textStyleItemsEnabled = document.querySelectorAll(
+            ".favicon_edit_text_style_item",
           );
-
-        if (result.bgType != undefined) {
-          if (result.bgType == BgType.GRADIENT) {
-            //console.log("Gradient Checked is Checked");
-            addGradient();
-          } else {
-            addBackgroundColor();
+          for (var j = 0; j < textStyleItemsEnabled.length; j++) {
+            textStyleItemsEnabled[j].classList.remove(
+              "favicon_edit_text_style_item_disabled",
+            );
           }
-        } else {
-          addBackgroundColor();
+          fEditType1Container.style.display = "block";
+          fEditType2Container.style.display = "none";
+          fEditType1.checked = true;
         }
 
-        function addBackgroundColor() {
-          // Background Color
-          if (result.bgColor != undefined) {
-            //console.log("BG Color: " + result.bgColor);
-            fEditBgColorValue = result.bgColor;
-          } else {
-            //console.log("BG Color NOT SET");
-            fEditBgColorValue = "#FE145B";
-          }
-          fEditBgColor.value = fEditBgColorValue;
-          fDisplay1.style.background = "";
-          fDisplay1.style.backgroundColor = fEditBgColorValue;
-        }
+        fEditBgColorValue = settings.bgColor;
+        fEditBgColor.value = fEditBgColorValue;
+        fEditBgColorValue2 = settings.bgColor2;
+        fEditBgColor2.value = fEditBgColorValue2;
+        fEditBgDegreesValue = settings.bgDegrees;
+        fEditBgDegrees.value = fEditBgDegreesValue;
+        fEditBgDegreesText.innerText = fEditBgDegreesValue;
+        fEditBgGradientTypeValue = settings.bgGradientType;
+        fEditBgRadialShapeValue = settings.bgRadialShape;
+        fEditBgRadialPositionValue = settings.bgRadialPosition;
 
-        function addGradient() {
+        if (settings.bgType == BgType.GRADIENT) {
           fBackgroundType2Container1.style.display = "block";
           fBackgroundType2Container2.style.display = "block";
           fBackgroundType2.checked = true;
-
-          // Add a normal bg first
-          if (result.bgColor != undefined) {
-            //console.log("BG Color: " + result.bgColor);
-            fEditBgColorValue = result.bgColor;
-          } else {
-            //console.log("BG Color NOT SET");
-            fEditBgColorValue = "#FE145B";
-          }
-          fEditBgColor.value = fEditBgColorValue;
-          fDisplay1.style.backgroundColor = fEditBgColorValue;
-
-          if (result.bgColor2 != undefined) {
-            fEditBgColorValue2 = result.bgColor2;
-          } else {
-            fEditBgColorValue2 = "#000000";
-          }
-
-          if (result.bgDegrees != undefined) {
-            fEditBgDegreesValue = result.bgDegrees;
-          } else {
-            fEditBgDegreesValue = 90;
-          }
-
-          if (result.bgGradientType != undefined) {
-            fEditBgGradientTypeValue = result.bgGradientType;
-          } else {
-            fEditBgGradientTypeValue = SettingsDefaults.bgGradientType;
-          }
-
-          if (result.bgRadialShape != undefined) {
-            fEditBgRadialShapeValue = result.bgRadialShape;
-          } else {
-            fEditBgRadialShapeValue = SettingsDefaults.bgRadialShape;
-          }
-
-          if (result.bgRadialPosition != undefined) {
-            fEditBgRadialPositionValue = result.bgRadialPosition;
-          } else {
-            fEditBgRadialPositionValue = SettingsDefaults.bgRadialPosition;
-          }
           updateGradientTypeUi();
-
-          var theGradient = buildBgGradientCss(
-            fEditBgColorValue,
-            fEditBgColorValue2,
-            fEditBgDegreesValue,
-            fEditBgGradientTypeValue,
-            fEditBgRadialShapeValue,
-            fEditBgRadialPositionValue,
-          );
-          fEditBgDegrees.value = fEditBgDegreesValue;
-          fEditBgDegreesText.innerText = fEditBgDegreesValue;
-          fEditBgColor2.value = fEditBgColorValue2;
-          fDisplay1.style.background = theGradient;
-        }
-
-        // Border Radius
-        if (result.borderRadius != undefined) {
-          //console.log("Border Radius: " + result.borderRadius);
-          fEditBorderRadiusValue = result.borderRadius;
         } else {
-          //console.log("Border Radius NOT SET");
-          fEditBorderRadiusValue = "0";
+          fBackgroundType2Container1.style.display = "none";
+          fBackgroundType2Container2.style.display = "none";
+          fBackgroundType1.checked = true;
         }
+
+        fEditBorderRadiusValue = settings.borderRadius;
         fEditBorderRadius.value = fEditBorderRadiusValue;
-        fDisplay1.style.borderRadius = fEditBorderRadiusValue + "%";
         document.getElementById("favicon_edit_border_radius_text").innerHTML =
           "(" + fEditBorderRadiusValue + "%)";
 
-        // Border Display
-        if (result.border != undefined) {
-          if (result.border == Border.ENABLED) {
-            fEditBorderEnabled.classList.add("favicon_edit_border_item_active");
-            fEditBorderDisabled.classList.remove(
-              "favicon_edit_border_item_active",
-            );
-            fEditBorderContainer.style.display = "block";
-            borderCreator();
-          } else {
-            fDisplay1.style.border = "";
-          }
+        if (settings.border == Border.ENABLED) {
+          fEditBorderEnabled.classList.add("favicon_edit_border_item_active");
+          fEditBorderDisabled.classList.remove(
+            "favicon_edit_border_item_active",
+          );
+          fEditBorderContainer.style.display = "block";
+          fEditBorderWidth.value = settings.borderWidth;
+          fEditBorderWidthText.innerHTML = "(" + settings.borderWidth + "px)";
+          fEditBorderColor.value = settings.borderColor;
         } else {
-          fDisplay1.style.border = "";
-        }
-
-        // Border Creator
-        function borderCreator() {
-          if (result.borderWidth != undefined) {
-            borderWidth = result.borderWidth + "px";
-            fEditBorderWidth.value = result.borderWidth;
-            fEditBorderWidthText.innerHTML = "(" + result.borderWidth + "px)";
-          } else {
-            borderWidth = "1px";
-          }
-
-          borderStyle = "solid";
-
-          if (result.borderColor != undefined) {
-            borderColor = result.borderColor;
-            fEditBorderColor.value = result.borderColor;
-          } else {
-            borderColor = "#000000";
-          }
-
-          fDisplay1.style.border =
-            borderWidth + " " + borderStyle + " " + borderColor;
+          fEditBorderEnabled.classList.remove(
+            "favicon_edit_border_item_active",
+          );
+          fEditBorderDisabled.classList.add("favicon_edit_border_item_active");
+          fEditBorderContainer.style.display = "none";
         }
 
         if (
           typeof previewFaviconInActiveTab === "function" &&
           typeof FaviconCanvas !== "undefined"
         ) {
-          previewFaviconInActiveTab(FaviconCanvas.normalizeSettings(result));
+          previewFaviconInActiveTab(FaviconCanvas.normalizeSettings(settings));
         }
       },
     );

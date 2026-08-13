@@ -1,22 +1,9 @@
 
 document.addEventListener('DOMContentLoaded', function() {
-    var FontType = FaviconSettings.FontType;
-    var BgType = FaviconSettings.BgType;
-    var BgGradientType = FaviconSettings.BgGradientType;
-    var Border = FaviconSettings.Border;
-    var RadialShape = FaviconSettings.RadialShape;
     var FileType = FaviconSettings.FileType;
     var FileOption = FaviconSettings.FileOption;
-    var SettingsDefaults = FaviconSettings.Defaults;
 
     /* Var value set */
-    var fEditTextColorValue;
-    var fEditBgColorValue;
-    var fEditBgColorValue2;
-    var fEditSizeValue;
-    var fEditBorderRadiusValue;
-    var fEditTextValue;
-    var fEditGoogleFontValue;
     var fEditDownloadButton = document.getElementById("favicon_download_button");
     var fEditDownloadFeedback = document.getElementById("favicon_download_feedback");
     var fEditFileType1 = document.getElementById("download_type1");
@@ -27,44 +14,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var HISTORY_KEY = "faviconHistory";
     /* End of Var value set */
 
-    function buildDesignSettings(result){
-        return {
-            fontType: result.fontType != undefined ? result.fontType : SettingsDefaults.fontType,
-            text: result.text != undefined ? result.text : "F",
-            fontAwesome: result.fontAwesome != undefined ? result.fontAwesome : "fa-thumbs-up",
-            fontFamily: result.fontFamily != undefined ? result.fontFamily : "Montserrat",
-            fontSize: result.fontSize != undefined ? result.fontSize : "30",
-            textColor: result.textColor != undefined ? result.textColor : "#FFFFFF",
-            textStyle1: result.textStyle1 === true,
-            textStyle2: result.textStyle2 === true,
-            textStyle3: result.textStyle3 === true,
-            textStyle4: result.textStyle4 === true,
-            bgType: result.bgType != undefined ? result.bgType : SettingsDefaults.bgType,
-            bgGradientType: result.bgGradientType != undefined ? result.bgGradientType : SettingsDefaults.bgGradientType,
-            bgRadialShape: result.bgRadialShape != undefined ? result.bgRadialShape : SettingsDefaults.bgRadialShape,
-            bgRadialPosition: result.bgRadialPosition != undefined ? result.bgRadialPosition : SettingsDefaults.bgRadialPosition,
-            bgColor: result.bgColor != undefined ? result.bgColor : "#FE145B",
-            bgColor2: result.bgColor2 != undefined ? result.bgColor2 : "#000000",
-            bgDegrees: result.bgDegrees != undefined ? result.bgDegrees : 90,
-            borderRadius: result.borderRadius != undefined ? result.borderRadius : "0",
-            border: result.border != undefined ? result.border : SettingsDefaults.border,
-            borderColor: result.borderColor != undefined ? result.borderColor : "#000000",
-            borderWidth: result.borderWidth != undefined ? result.borderWidth : SettingsDefaults.borderWidth
-        };
-    }
-
-    function settingsEqual(a, b){
-        if (!a || !b){
-            return false;
-        }
-        return JSON.stringify(a) === JSON.stringify(b);
-    }
-
     function saveFaviconToHistory(result){
-        var settings = buildDesignSettings(result);
+        var settings = FaviconDesign.buildDesignSettings(result);
         chrome.storage.local.get([HISTORY_KEY], function(stored){
             var history = Array.isArray(stored[HISTORY_KEY]) ? stored[HISTORY_KEY].slice() : [];
-            if (history.length > 0 && settingsEqual(history[0].settings, settings)){
+            if (history.length > 0 && FaviconDesign.settingsEqual(history[0].settings, settings)){
                 return;
             }
             history.unshift({
@@ -221,9 +175,10 @@ document.addEventListener('DOMContentLoaded', function() {
         fDisplay1 = document.getElementById("favicon_display");
         fDisplay2 = document.getElementById("favicon_display_content");
 
-        var borderLive = false;
-
-        chrome.storage.local.get(['fontType', 'textColor', 'bgColor', 'bgColor2', 'bgType', 'bgGradientType', 'bgRadialShape', 'bgRadialPosition', 'bgDegrees', 'fontSize', 'borderRadius', 'text', 'textStyle1', 'textStyle2', 'textStyle3', 'textStyle4', 'fontFamily', 'fontAwesome', 'border', 'borderColor', 'borderWidth', 'download_size1', 'download_size2', 'download_size3', 'download_size4', 'download_size5', 'fileType', 'fileHtml', 'fileReadMe'], function(result) {
+        chrome.storage.local.get(FaviconDesign.KEYS.concat([
+            'download_size1', 'download_size2', 'download_size3', 'download_size4', 'download_size5',
+            'fileType', 'fileHtml', 'fileReadMe'
+        ]), function(result) {
 
             var totalSizeChecked = 0;
 
@@ -350,195 +305,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 fEditFileType1.checked = true;
             }
 
-            // Text Color
-            if (result.textColor != undefined){
-                //console.log("Text Color: " + result.textColor);
-                fEditTextColorValue = result.textColor;
-            } else {
-                //console.log("Text Color NOT SET");
-                fEditTextColorValue = "#FFFFFF";
-            }
-            fDisplay2.style.color = fEditTextColorValue;
-
-            // Text Style: Bold
-            if (result.textStyle1 != undefined){
-                if (result.textStyle1 == true){
-                    fDisplay2.style.fontWeight = "bold";
-                } else {
-                    fDisplay2.style.fontWeight = "normal";
-                }
-            } else {
-                fDisplay2.style.fontWeight = "normal";
-            }
-
-            // Text Style: Italic
-            if (result.textStyle2 != undefined){
-                if (result.textStyle2 == true){
-                    fDisplay2.style.fontStyle = "italic";
-                } else {
-                    fDisplay2.style.fontStyle = "normal";
-                }
-            } else {
-                fDisplay2.style.fontStyle = "normal";
-            }
-
-            // Text Style: Underline
-            if (result.textStyle3 != undefined){
-                if (result.textStyle3 == true){
-                    fDisplay2.style.textDecoration = "underline";
-                } else {
-                    fDisplay2.style.textDecoration = "inherit";
-                }
-            } else {
-                fDisplay2.style.textDecoration = "inherit";
-            }
-
-            // Text Style: Strike
-            if (result.textStyle3 != undefined && result.textStyle3 != true){
-                if (result.textStyle4 != undefined){
-                    if (result.textStyle4 == true){
-                        fDisplay2.style.textDecoration = "line-through";
-                    } else {
-                        fDisplay2.style.textDecoration = "inherit";
-                    }
-                } else {
-                    fDisplay2.style.textDecoration = "inherit";
-                }
-            }
-
-
-            // Background Color
-            if (result.bgColor != undefined){
-                //console.log("BG Color: " + result.bgColor);
-                fEditBgColorValue = result.bgColor;
-            } else {
-                //console.log("BG Color NOT SET");
-                fEditBgColorValue = "#FE145B";
-            }
-            fDisplay1.style.backgroundColor = fEditBgColorValue;
-
-            // Background Gradient
-            if (result.bgType != undefined && result.bgType == BgType.GRADIENT){
-                fEditBgColorValue = result.bgColor ? result.bgColor : "#FE145B";
-                fEditBgColorValue2 = result.bgColor2 ? result.bgColor2 : "#000";
-                var fEditBgDegreesValue = result.bgDegrees != undefined ? result.bgDegrees : 90;
-                var fEditBgGradientTypeValue = result.bgGradientType != undefined ? result.bgGradientType : SettingsDefaults.bgGradientType;
-                if (fEditBgGradientTypeValue == BgGradientType.RADIAL){
-                    var radialShape = result.bgRadialShape == RadialShape.ELLIPSE ? RadialShape.ELLIPSE : RadialShape.CIRCLE;
-                    var radialPosition = result.bgRadialPosition || SettingsDefaults.bgRadialPosition;
-                    fDisplay1.style.background = `radial-gradient(${radialShape} at ${radialPosition}, ${fEditBgColorValue} 0%, ${fEditBgColorValue2} 78%)`;
-                } else {
-                    fDisplay1.style.background = `linear-gradient(${fEditBgDegreesValue}deg, ${fEditBgColorValue} 0%, ${fEditBgColorValue2} 78%)`;
-                }
-            }
-
-            // Border Radius
-            if (result.borderRadius != undefined){
-                //console.log("Border Radius: " + result.fontSize);
-                fEditBorderRadiusValue = result.borderRadius;
-            } else {
-                //console.log("Border Radius NOT SET");
-                fEditBorderRadiusValue = "0";
-            }
-            fDisplay1.style.borderRadius = fEditBorderRadiusValue + "%";
-            
-            // Font Size
-            if (result.fontSize != undefined){
-                //console.log("Font Size: " + result.fontSize);
-                fEditSizeValue = result.fontSize;
-            } else {
-                //console.log("Font Size NOT SET");
-                fEditSizeValue = "30";
-            }
-            fDisplay2.style.fontSize = fEditSizeValue + "px";
-
-            
-
-            // Border
-            // Border Display
-            if (result.border != undefined){
-                if (result.border == Border.ENABLED){
-                    borderLive = true;
-                    borderCreator();
-                }
-            }
-
-
-            // Border Creator
-            function borderCreator(){
-
-                if (result.borderWidth != undefined){
-                    borderWidth = result.borderWidth;
-                } else {
-                    borderWidth = 1;
-                }
-
-                if (result.borderColor != undefined){
-                    borderColor = result.borderColor;
-                } else {
-                    borderColor = "#000000";
-                }
-
-                borderStyle = "solid";
-                
-                fDisplay1.style.border = borderWidth + "px " + borderStyle + " " + borderColor;
-
-            }
-
-
-
-
-            // Font Type
-            if (result.fontType != undefined){
-                if (result.fontType == FontType.FONT_AWESOME){
-                    //console.log("Font Awesome is Checked");
-                    addIcon();
-                } else {
-                    addText();
-                }
-            } else {
-                addText();
-            }
-
-            function addText(){
-                // Text
-                if (result.text != undefined){
-                    //console.log("Text: " + result.text);
-                    fEditTextValue = result.text;
-                } else {
-                    //console.log("Text NOT SET");
-                    fEditTextValue = "F";
-                }
-                fDisplay2.innerHTML = fEditTextValue;
-            }
-
-            function addIcon(){
-                // Font Awesome
-                if (result.fontAwesome != undefined){
-                    //console.log("Font Awesome: " + result.fontAwesome);
-                    fEditText = '<i class="fa '+result.fontAwesome+'"></i>';
-                } else {
-                    //console.log("Font Awesome NOT SET");
-                    fEditText = '<i class="fa fa-thumbs-up"></i>';
-                }
-                fDisplay2.innerHTML = fEditText;
-            }
-
-
-            // Font Family
-            if (result.fontFamily != undefined){
-                //console.log("Font Family: " + result.fontFamily);
-                fEditGoogleFontValue = result.fontFamily;
-            } else {
-                //console.log("Font Family NOT SET");
-                fEditGoogleFontValue = "Montserrat";
-            }
-            fDisplay2.style.fontFamily = fEditGoogleFontValue;
-            document.getElementById("googleFontStylesheet").setAttribute('href', 'https://fonts.googleapis.com/css?family='+fEditGoogleFontValue);
+            var designSettings = FaviconDesign.applyPreviewStyles(
+                fDisplay1,
+                fDisplay2,
+                result,
+                { googleFontStylesheetId: "googleFontStylesheet" }
+            );
 
             htmlOutput();
-
-            var designSettings = buildDesignSettings(result);
 
             if (!shouldDownload && typeof previewFaviconInActiveTab === "function") {
                 previewFaviconInActiveTab(designSettings);
