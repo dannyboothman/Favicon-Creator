@@ -216,11 +216,20 @@
     if (options.googleFontStylesheetId) {
       var link = document.getElementById(options.googleFontStylesheetId);
       if (link) {
-        link.setAttribute(
-          "href",
-          "https://fonts.googleapis.com/css?family=" +
-            encodeURIComponent(s.fontFamily)
-        );
+        // Montserrat is bundled locally; only fetch other Google Fonts for preview.
+        var needsRemoteFont =
+          s.fontType != FontType.FONT_AWESOME &&
+          s.fontFamily &&
+          s.fontFamily !== "Montserrat";
+        if (needsRemoteFont) {
+          link.setAttribute(
+            "href",
+            "https://fonts.googleapis.com/css?family=" +
+              encodeURIComponent(s.fontFamily)
+          );
+        } else {
+          link.removeAttribute("href");
+        }
       }
     }
 

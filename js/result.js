@@ -296,6 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (shouldDownload){
+            fEditDownloadFeedback.innerText = "";
             var zip = new JSZip();
 
             // Generate a directory within the Zip file structure
@@ -324,8 +325,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 fileMime = "image/jpeg";
             }
 
-            function onDownloadError(){
+            function onDownloadError(message){
                 finishDownloading();
+                fEditDownloadFeedback.innerText =
+                    message || "Download failed. Please try again.";
             }
 
             function captureFaviconAtSize(sizePx, mime){
@@ -344,64 +347,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 zip.file(filename, encoded, {base64: true});
             }
 
-            // 64 x 64
-            function faviconCanvasSize64(){
-                if (size64 == true){
-                    captureFaviconAtSize(64).then(function(favicon1){
-                        addFaviconToZip("favicon64x64." + fileTypeWhich, favicon1);
-                        faviconCanvasSize16();
-                    }).catch(onDownloadError);
-                } else {
-                    faviconCanvasSize16();
-                }
-            }
-
-            // 16 x 16
-            function faviconCanvasSize16(){
-                if (size16 == true){
-                    captureFaviconAtSize(16).then(function(favicon2){
-                        addFaviconToZip("favicon16x16." + fileTypeWhich, favicon2);
-                        faviconCanvasSize32();
-                    }).catch(onDownloadError);
-                } else {
-                    faviconCanvasSize32();
-                }
-            }
-
-            // 32 x 32
-            function faviconCanvasSize32(){
-                if (size32 == true){
-                    captureFaviconAtSize(32).then(function(favicon3){
-                        addFaviconToZip("favicon32x32." + fileTypeWhich, favicon3);
-                        faviconCanvasSize128();
-                    }).catch(onDownloadError);
-                } else {
-                    faviconCanvasSize128();
-                }
-            }
-
-            // 128 x 128
-            function faviconCanvasSize128(){
-                if (size128 == true){
-                    captureFaviconAtSize(128).then(function(favicon4){
-                        addFaviconToZip("favicon128x128." + fileTypeWhich, favicon4);
-                        faviconCanvasSize256();
-                    }).catch(onDownloadError);
-                } else {
-                    faviconCanvasSize256();
-                }
-            }
-
-            // 256 x 256
-            function faviconCanvasSize256(){
-                if (size256 == true){
-                    captureFaviconAtSize(256).then(function(favicon5){
-                        addFaviconToZip("favicon256x256." + fileTypeWhich, favicon5);
-                        faviconPackSvg();
-                    }).catch(onDownloadError);
-                } else {
-                    faviconPackSvg();
-                }
+            function captureSelectedSizes(){
+                var sizeSpecs = [
+                    { enabled: size16, px: 16 },
+                    { enabled: size32, px: 32 },
+                    { enabled: size64, px: 64 },
+                    { enabled: size128, px: 128 },
+                    { enabled: size256, px: 256 }
+                ];
+                return Promise.all(
+                    sizeSpecs
+                        .filter(function(spec){ return spec.enabled; })
+                        .map(function(spec){
+                            return captureFaviconAtSize(spec.px).then(function(encoded){
+                                addFaviconToZip(
+                                    "favicon" + spec.px + "x" + spec.px + "." + fileTypeWhich,
+                                    encoded
+                                );
+                            });
+                        })
+                );
             }
 
             function faviconPackSvg(){
@@ -409,7 +374,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     try {
                         zip.file("favicon.svg", FaviconSvg.renderToString(designSettings));
                     } catch (err) {
-                        onDownloadError();
+                        onDownloadError("Could not generate the SVG favicon.");
                         return;
                     }
                 }
@@ -515,17 +480,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             function downloadZip(){
-                // Generate the zip file asynchronously
                 zip.generateAsync({type:"blob"})
                 .then(function(content) {
-                    // Force down of the Zip file
                     saveAs(content, "favicon-creator.zip");
                     saveFaviconToHistory(result);
                     finishDownloading();
-                }).catch(finishDownloading);
+                }).catch(function(){
+                    onDownloadError("Could not generate the zip file. Please try again.");
+                });
             }
 
-            faviconCanvasSize64();
+            captureSelectedSizes()
+                .then(faviconPackSvg)
+                .catch(function(){
+                    onDownloadError("Could not render favicon images. Please try again.");
+                });
             }
 
         });

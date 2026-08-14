@@ -16,10 +16,12 @@ async function loadPartial(path, targetId) {
 
 function setActiveNavLink() {
     const page = location.pathname.split("/").pop() || "popup.html";
+    // Privacy lives under Settings; keep Settings highlighted there.
+    const activePage = page === "privacy.html" ? "settings.html" : page;
     const links = document.querySelectorAll("#main_nav a[href]");
     links.forEach(function (link) {
         const href = link.getAttribute("href");
-        if (href === page) {
+        if (href === activePage) {
             link.classList.add("main_nav_active");
             link.removeAttribute("href");
         }

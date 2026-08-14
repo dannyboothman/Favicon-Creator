@@ -32,13 +32,20 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
       var family = settings.fontFamily || "Montserrat";
+      // Montserrat is bundled locally for extension UI.
+      if (family === "Montserrat") {
+        return;
+      }
       families[family] = true;
     });
     var names = Object.keys(families);
+    var link = document.getElementById("historyFontsStylesheet");
     if (names.length === 0) {
+      if (link) {
+        link.removeAttribute("href");
+      }
       return;
     }
-    var link = document.getElementById("historyFontsStylesheet");
     if (!link) {
       link = document.createElement("link");
       link.id = "historyFontsStylesheet";

@@ -4,8 +4,8 @@
         <meta charset="utf-8" />
         <title>Feedback — Favicon Creator</title>
         <link rel="stylesheet" type="text/css" href="css/styles.css" />
-        <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" />
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="css/montserrat.css" />
+        <link rel="stylesheet" href="css/font-awesome.min.css" />
         <script src="js/partials.js"></script>
         <script src="js/tab-favicon-preview.js"></script>
         <script src="js/script.js"></script>
@@ -22,6 +22,11 @@
                 <div class="text_section">
                     <p><strong>Changelog</strong></p>
                     <div id="changelog_inner">
+                        <em>14th August 2026</em>
+                        <ul>
+                            <li>Download now renders selected favicon sizes in parallel and shows a clear error if zip generation fails.</li>
+                            <li>Montserrat and Font Awesome are bundled locally so extension pages no longer load UI fonts from CDNs.</li>
+                        </ul>
                         <em>13th August 2026</em>
                         <ul>
                             <li>Favicon preview stays square; extra characters are clipped instead of stretching the icon.</li>
@@ -35,7 +40,6 @@
                         <em>12th August 2026</em>
                         <ul>
                             <li>Theme toggle now supports Light, Dark, and System (follows your OS preference).</li>
-                            <li>Google Fonts are now bundled with the extension for more reliable font loading.</li>
                             <li>Downloading favicons no longer resizes the on-screen preview or causes the popup to jump.</li>
                             <li>Download button now shows "Downloading" and is disabled while the zip is being generated.</li>
                             <li>Restored live preview of your favicon in the current browser tab.</li>
