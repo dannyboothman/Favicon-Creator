@@ -10,6 +10,7 @@
         <script src="js/partials.js"></script>
         <script src="js/settings-enums.js"></script>
         <script src="js/design-settings.js"></script>
+        <script src="js/image-upload.js"></script>
         <script src="js/fontawesome-icons.js"></script>
         <script src="js/fontawesome-paths.js"></script>
         <script src="js/google-fonts.js"></script>
@@ -37,41 +38,49 @@
                 <div id="favicon_edit_container1" role="tabpanel" aria-labelledby="favicon_tab1">
 
                     <div class="hide_overflow">
-                        <div class="input_container input_container_50">
+                        <div class="width_33">
                             <div class="checkbox_container">
                                 <input type="radio" id="favicon_edit_type1" name="favicon_edit_type" checked="checked" />
                                 <label for="favicon_edit_type1"><span>Text</span></label>
                             </div>
                         </div>
-                        <div class="input_container input_container_50">
+                        <div class="width_33">
                             <div class="checkbox_container">
                                 <input type="radio" id="favicon_edit_type2" name="favicon_edit_type" />
                                 <label for="favicon_edit_type2"><span>Font Awesome</span></label>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="hide_overflow">
-                        <div class="input_container input_container_50">
-                            <label>Text Color</label>
-                            <input type="color" value="#FFFFFF" id="favicon_edit_text_color" />
-                        </div>
-                        
-                        <div class="width_50">
-                            <div class="favicon_edit_label"><strong>Text Styles</strong></div>
-                            <div class="favicon_edit_text_style_container hide_overflow">
-                                <div class="favicon_edit_text_style_item" id="favicon_edit_text_style_item_bold">B</div>
-                                <div class="favicon_edit_text_style_item" id="favicon_edit_text_style_item_italic">I</div>
-                                <div class="favicon_edit_text_style_item" id="favicon_edit_text_style_item_underline">U</div>
-                                <div class="favicon_edit_text_style_item" id="favicon_edit_text_style_item_strike">S</div>
+                        <div class="width_33">
+                            <div class="checkbox_container">
+                                <input type="radio" id="favicon_edit_type3" name="favicon_edit_type" />
+                                <label for="favicon_edit_type3"><span>Image</span></label>
                             </div>
                         </div>
                     </div>
 
-                    <div class="hide_overflow">
-                        <div class="input_container">
-                            <label>Font Size <span id="favicon_edit_font_size_text">(30px)</span></label>
-                            <input type="range" min="10" max="50" value="30" id="favicon_edit_font_size" />
+                    <div id="favicon_edit_glyph_controls">
+                        <div class="hide_overflow">
+                            <div class="input_container input_container_50">
+                                <label>Text Color</label>
+                                <input type="color" value="#FFFFFF" id="favicon_edit_text_color" />
+                            </div>
+                            
+                            <div class="width_50">
+                                <div class="favicon_edit_label"><strong>Text Styles</strong></div>
+                                <div class="favicon_edit_text_style_container hide_overflow">
+                                    <div class="favicon_edit_text_style_item" id="favicon_edit_text_style_item_bold">B</div>
+                                    <div class="favicon_edit_text_style_item" id="favicon_edit_text_style_item_italic">I</div>
+                                    <div class="favicon_edit_text_style_item" id="favicon_edit_text_style_item_underline">U</div>
+                                    <div class="favicon_edit_text_style_item" id="favicon_edit_text_style_item_strike">S</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hide_overflow">
+                            <div class="input_container">
+                                <label>Font Size <span id="favicon_edit_font_size_text">(30px)</span></label>
+                                <input type="range" min="10" max="50" value="30" id="favicon_edit_font_size" />
+                            </div>
                         </div>
                     </div>
 
@@ -98,29 +107,69 @@
                         </div>
                     </div>
 
+                    <div id="favicon_edit_type_image" style="display: none;">
+                        <div class="hide_overflow">
+                            <div class="input_container">
+                                <label for="favicon_edit_visual_image">Upload Image</label>
+                                <input type="file" id="favicon_edit_visual_image" accept="image/png,image/jpeg,image/webp" />
+                                <p class="favicon_edit_image_error" id="favicon_edit_visual_image_error" hidden></p>
+                            </div>
+                        </div>
+                        <div class="favicon_edit_image_preview_row hide_overflow">
+                            <div class="favicon_edit_image_thumb" id="favicon_edit_visual_image_thumb"></div>
+                            <button type="button" class="favicon_edit_image_remove" id="favicon_edit_visual_image_remove">Remove</button>
+                        </div>
+                        <div class="hide_overflow">
+                            <div class="input_container">
+                                <label>Scale <span id="favicon_edit_visual_image_scale_text">(100%)</span></label>
+                                <input type="range" min="20" max="300" value="100" id="favicon_edit_visual_image_scale" />
+                            </div>
+                        </div>
+                        <div class="hide_overflow">
+                            <div class="input_container input_container_50">
+                                <label>Position X <span id="favicon_edit_visual_image_pos_x_text">(0%)</span></label>
+                                <input type="range" min="-50" max="50" value="0" id="favicon_edit_visual_image_pos_x" />
+                            </div>
+                            <div class="input_container input_container_50">
+                                <label>Position Y <span id="favicon_edit_visual_image_pos_y_text">(0%)</span></label>
+                                <input type="range" min="-50" max="50" value="0" id="favicon_edit_visual_image_pos_y" />
+                            </div>
+                        </div>
+                        <div class="hide_overflow">
+                            <div class="input_container">
+                                <label>Opacity <span id="favicon_edit_visual_image_opacity_text">(100%)</span></label>
+                                <input type="range" min="0" max="100" value="100" id="favicon_edit_visual_image_opacity" />
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div id="favicon_edit_container2" role="tabpanel" aria-labelledby="favicon_tab2" hidden>
                      
 
                     <div class="hide_overflow">
-                        <div class="input_container">
-                            <div class="width_50">
-                                <div class="checkbox_container">
-                                    <input type="radio" id="favicon_edit_background_type_solid" name="favicon_edit_background_type" checked />
-                                    <label for="favicon_edit_background_type_solid"><span>Solid</span></label>
-                                </div>
+                        <div class="width_33">
+                            <div class="checkbox_container">
+                                <input type="radio" id="favicon_edit_background_type_solid" name="favicon_edit_background_type" checked />
+                                <label for="favicon_edit_background_type_solid"><span>Solid</span></label>
                             </div>
-                            <div class="width_50">
-                                <div class="checkbox_container">
-                                    <input type="radio" id="favicon_edit_background_type_gradient" name="favicon_edit_background_type" />
-                                    <label for="favicon_edit_background_type_gradient"><span>Gradient</span></label>
-                                </div>
+                        </div>
+                        <div class="width_33">
+                            <div class="checkbox_container">
+                                <input type="radio" id="favicon_edit_background_type_gradient" name="favicon_edit_background_type" />
+                                <label for="favicon_edit_background_type_gradient"><span>Gradient</span></label>
+                            </div>
+                        </div>
+                        <div class="width_33">
+                            <div class="checkbox_container">
+                                <input type="radio" id="favicon_edit_background_type_image" name="favicon_edit_background_type" />
+                                <label for="favicon_edit_background_type_image"><span>Image</span></label>
                             </div>
                         </div>
                     </div>
 
-                    <div class="hide_overflow">
+                    <div id="favicon_edit_background_color_row" class="hide_overflow">
                         <div class="input_container input_container_50">
                             <label>Background Color</label>
                             <input type="color" value="#FE145B" id="favicon_edit_bg_color" />
@@ -198,6 +247,42 @@
                             </div>
                         </div>
 
+                    </div>
+
+                    <div id="favicon_edit_background_type_image_container" style="display: none;">
+                        <div class="hide_overflow">
+                            <div class="input_container">
+                                <label for="favicon_edit_bg_image">Upload Image</label>
+                                <input type="file" id="favicon_edit_bg_image" accept="image/png,image/jpeg,image/webp" />
+                                <p class="favicon_edit_image_error" id="favicon_edit_bg_image_error" hidden></p>
+                            </div>
+                        </div>
+                        <div class="favicon_edit_image_preview_row hide_overflow">
+                            <div class="favicon_edit_image_thumb" id="favicon_edit_bg_image_thumb"></div>
+                            <button type="button" class="favicon_edit_image_remove" id="favicon_edit_bg_image_remove">Remove</button>
+                        </div>
+                        <div class="hide_overflow">
+                            <div class="input_container">
+                                <label>Scale <span id="favicon_edit_bg_image_scale_text">(100%)</span></label>
+                                <input type="range" min="20" max="300" value="100" id="favicon_edit_bg_image_scale" />
+                            </div>
+                        </div>
+                        <div class="hide_overflow">
+                            <div class="input_container input_container_50">
+                                <label>Position X <span id="favicon_edit_bg_image_pos_x_text">(0%)</span></label>
+                                <input type="range" min="-50" max="50" value="0" id="favicon_edit_bg_image_pos_x" />
+                            </div>
+                            <div class="input_container input_container_50">
+                                <label>Position Y <span id="favicon_edit_bg_image_pos_y_text">(0%)</span></label>
+                                <input type="range" min="-50" max="50" value="0" id="favicon_edit_bg_image_pos_y" />
+                            </div>
+                        </div>
+                        <div class="hide_overflow">
+                            <div class="input_container">
+                                <label>Opacity <span id="favicon_edit_bg_image_opacity_text">(100%)</span></label>
+                                <input type="range" min="0" max="100" value="100" id="favicon_edit_bg_image_opacity" />
+                            </div>
+                        </div>
                     </div>
 
                 </div>

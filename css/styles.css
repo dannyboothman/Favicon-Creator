@@ -373,6 +373,31 @@ header {
   overflow: hidden;
   white-space: nowrap;
   line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.favicon_preview_bg_image,
+.favicon_preview_visual_image {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.favicon_preview_visual_image {
+  z-index: 1;
+}
+
+.favicon_preview_bg_image img,
+.favicon_preview_visual_image img {
+  position: absolute;
+  display: block;
+  max-width: none;
 }
 
 /* Favicon Editor */
@@ -385,7 +410,10 @@ header {
 #favicon_edit_container2,
 #favicon_edit_container3,
 #favicon_edit_background_type_gradient_container,
-#favicon_edit_background_type_gradient_container2 {
+#favicon_edit_background_type_gradient_container2,
+#favicon_edit_type_fontawesome,
+#favicon_edit_type_image,
+#favicon_edit_background_type_image_container {
   display: none;
 }
 
@@ -515,6 +543,15 @@ header {
 }
 .input_container_50:nth-of-type(2n + 1),
 .width_50:nth-of-type(2n + 1) {
+  margin-left: 0%;
+}
+
+.width_33 {
+  width: 30.666%;
+  margin-left: 4%;
+  float: left;
+}
+.width_33:nth-of-type(3n + 1) {
   margin-left: 0%;
 }
 
@@ -653,6 +690,56 @@ header {
 
 #favicon_edit_type_fontawesome {
   display: none;
+}
+
+.favicon_edit_image_error {
+  color: #c0392b;
+  font-size: 12px;
+  margin: 6px 0 0 0;
+}
+
+.favicon_edit_image_preview_row {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.favicon_edit_image_thumb {
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--main-border);
+  border-radius: 4px;
+  background: var(--nav-bg);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.favicon_edit_image_thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.favicon_edit_image_remove {
+  border: 1px solid var(--main-border);
+  background: var(--light-color);
+  color: var(--body-color);
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.favicon_edit_image_remove:hover {
+  border-color: var(--main-color);
+}
+
+.input_container input[type="file"] {
+  height: auto;
+  line-height: normal;
+  padding: 4px;
 }
 
 #favicon_edit_font_awesome_button {
@@ -824,6 +911,7 @@ header {
   overflow: hidden;
   white-space: nowrap;
   text-align: center;
+  position: relative;
 }
 
 .favicon_history_preview_content {

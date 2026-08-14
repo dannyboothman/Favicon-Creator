@@ -7,11 +7,13 @@
   var FontType = Object.freeze({
     TEXT: "1",
     FONT_AWESOME: "2",
+    IMAGE: "3",
   });
 
   var BgType = Object.freeze({
     SOLID: "1",
     GRADIENT: "2",
+    IMAGE: "3",
   });
 
   var BgGradientType = Object.freeze({

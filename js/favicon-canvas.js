@@ -6,10 +6,12 @@
   var FontType = (global.FaviconSettings && global.FaviconSettings.FontType) || {
     TEXT: "1",
     FONT_AWESOME: "2",
+    IMAGE: "3",
   };
   var BgType = (global.FaviconSettings && global.FaviconSettings.BgType) || {
     SOLID: "1",
     GRADIENT: "2",
+    IMAGE: "3",
   };
   var BgGradientType =
     (global.FaviconSettings && global.FaviconSettings.BgGradientType) || {
@@ -41,6 +43,36 @@
   var FA_ASCENT = 1536;
   var FA_DESCENT = -256;
   var FA_MID_Y = (FA_ASCENT + FA_DESCENT) / 2;
+  var imageCache = {};
+
+  function computeImageDrawRect(imgW, imgH, boxSize, scalePct, posXPct, posYPct) {
+    if (global.FaviconDesign && global.FaviconDesign.computeImageDrawRect) {
+      return global.FaviconDesign.computeImageDrawRect(
+        imgW,
+        imgH,
+        boxSize,
+        scalePct,
+        posXPct,
+        posYPct
+      );
+    }
+    var iw = Math.max(1, Number(imgW) || 1);
+    var ih = Math.max(1, Number(imgH) || 1);
+    var box = Math.max(1, Number(boxSize) || 1);
+    var cover = Math.max(box / iw, box / ih);
+    var userScale = (Number(scalePct) || 100) / 100;
+    var s = cover * userScale;
+    var w = iw * s;
+    var h = ih * s;
+    var ox = ((Number(posXPct) || 0) / 100) * box;
+    var oy = ((Number(posYPct) || 0) / 100) * box;
+    return {
+      x: (box - w) / 2 + ox,
+      y: (box - h) / 2 + oy,
+      w: w,
+      h: h,
+    };
+  }
 
   function normalizeSettings(settings) {
     var s =
@@ -57,6 +89,11 @@
             textStyle2: false,
             textStyle3: false,
             textStyle4: false,
+            visualImage: "",
+            visualImageScale: 100,
+            visualImagePosX: 0,
+            visualImagePosY: 0,
+            visualImageOpacity: 100,
             bgType: Defaults.bgType,
             bgGradientType: Defaults.bgGradientType,
             bgRadialShape: Defaults.bgRadialShape,
@@ -64,6 +101,11 @@
             bgColor: "#FE145B",
             bgColor2: "#000000",
             bgDegrees: 90,
+            bgImage: "",
+            bgImageScale: 100,
+            bgImagePosX: 0,
+            bgImagePosY: 0,
+            bgImageOpacity: 100,
             borderRadius: 0,
             border: Defaults.border,
             borderColor: "#000000",
@@ -80,6 +122,11 @@
       textStyle2: s.textStyle2 === true,
       textStyle3: s.textStyle3 === true,
       textStyle4: s.textStyle4 === true,
+      visualImage: s.visualImage || "",
+      visualImageScale: Number(s.visualImageScale),
+      visualImagePosX: Number(s.visualImagePosX),
+      visualImagePosY: Number(s.visualImagePosY),
+      visualImageOpacity: Number(s.visualImageOpacity),
       bgType: s.bgType,
       bgGradientType: s.bgGradientType,
       bgRadialShape: s.bgRadialShape,
@@ -87,6 +134,11 @@
       bgColor: s.bgColor,
       bgColor2: s.bgColor2,
       bgDegrees: Number(s.bgDegrees),
+      bgImage: s.bgImage || "",
+      bgImageScale: Number(s.bgImageScale),
+      bgImagePosX: Number(s.bgImagePosX),
+      bgImagePosY: Number(s.bgImagePosY),
+      bgImageOpacity: Number(s.bgImageOpacity),
       borderRadius: Number(s.borderRadius),
       border: s.border,
       borderColor: s.borderColor,
@@ -202,7 +254,59 @@
     };
   }
 
-  function createBackground(ctx, settings, size) {
+  function loadImage(dataUrl) {
+    if (!dataUrl) {
+      return Promise.resolve(null);
+    }
+    if (imageCache[dataUrl]) {
+      return Promise.resolve(imageCache[dataUrl]);
+    }
+    return new Promise(function (resolve) {
+      var img = new Image();
+      img.onload = function () {
+        imageCache[dataUrl] = img;
+        resolve(img);
+      };
+      img.onerror = function () {
+        resolve(null);
+      };
+      img.src = dataUrl;
+    });
+  }
+
+  function drawDesignImage(ctx, img, size, scalePct, posXPct, posYPct, opacityPct) {
+    if (!img) {
+      return;
+    }
+    var rect = computeImageDrawRect(
+      img.naturalWidth || img.width,
+      img.naturalHeight || img.height,
+      size,
+      scalePct,
+      posXPct,
+      posYPct
+    );
+    var opacity = Math.max(0, Math.min(1, (Number(opacityPct) || 100) / 100));
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.drawImage(img, rect.x, rect.y, rect.w, rect.h);
+    ctx.restore();
+  }
+
+  function createBackground(ctx, settings, size, bgImageEl) {
+    if (settings.bgType == BgType.IMAGE) {
+      drawDesignImage(
+        ctx,
+        bgImageEl,
+        size,
+        settings.bgImageScale,
+        settings.bgImagePosX,
+        settings.bgImagePosY,
+        settings.bgImageOpacity
+      );
+      return;
+    }
+
     if (settings.bgType == BgType.GRADIENT) {
       if (settings.bgGradientType == BgGradientType.RADIAL) {
         var center = parseRadialPosition(settings.bgRadialPosition, size);
@@ -265,7 +369,10 @@
   }
 
   function waitForFonts(settings) {
-    if (settings.fontType == FontType.FONT_AWESOME) {
+    if (
+      settings.fontType == FontType.FONT_AWESOME ||
+      settings.fontType == FontType.IMAGE
+    ) {
       return Promise.resolve();
     }
     if (!document.fonts || !document.fonts.load) {
@@ -375,9 +482,19 @@
     ctx.save();
     ctx.clip();
 
-    createBackground(ctx, settings, size);
+    createBackground(ctx, settings, size, options.bgImageEl);
 
-    if (settings.fontType == FontType.FONT_AWESOME) {
+    if (settings.fontType == FontType.IMAGE) {
+      drawDesignImage(
+        ctx,
+        options.visualImageEl,
+        size,
+        settings.visualImageScale,
+        settings.visualImagePosX,
+        settings.visualImagePosY,
+        settings.visualImageOpacity
+      );
+    } else if (settings.fontType == FontType.FONT_AWESOME) {
       drawIconGlyph(ctx, settings, size, scale);
     } else {
       drawTextGlyph(ctx, settings, size, scale);
@@ -445,7 +562,13 @@
     var size = Math.max(1, Math.round(sizePx));
     var type = normalizeMime(mime);
 
-    return waitForFonts(normalized).then(function () {
+    return Promise.all([
+      waitForFonts(normalized),
+      loadImage(normalized.bgType == BgType.IMAGE ? normalized.bgImage : ""),
+      loadImage(
+        normalized.fontType == FontType.IMAGE ? normalized.visualImage : ""
+      ),
+    ]).then(function (results) {
       var canvas = createSurface(size);
       var ctx = canvas.getContext("2d");
       if (!ctx) {
@@ -454,6 +577,8 @@
 
       drawFavicon(ctx, normalized, size, {
         opaqueBackdrop: type === "image/jpeg",
+        bgImageEl: results[1],
+        visualImageEl: results[2],
       });
       return canvas;
     });

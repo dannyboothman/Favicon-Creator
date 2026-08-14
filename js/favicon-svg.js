@@ -5,10 +5,12 @@
   var FontType = (global.FaviconSettings && global.FaviconSettings.FontType) || {
     TEXT: "1",
     FONT_AWESOME: "2",
+    IMAGE: "3",
   };
   var BgType = (global.FaviconSettings && global.FaviconSettings.BgType) || {
     SOLID: "1",
     GRADIENT: "2",
+    IMAGE: "3",
   };
   var BgGradientType =
     (global.FaviconSettings && global.FaviconSettings.BgGradientType) || {
@@ -48,6 +50,35 @@
       return global.FaviconDesign.buildDesignSettings(settings);
     }
     return settings || {};
+  }
+
+  function computeImageDrawRect(imgW, imgH, boxSize, scalePct, posXPct, posYPct) {
+    if (global.FaviconDesign && global.FaviconDesign.computeImageDrawRect) {
+      return global.FaviconDesign.computeImageDrawRect(
+        imgW,
+        imgH,
+        boxSize,
+        scalePct,
+        posXPct,
+        posYPct
+      );
+    }
+    var iw = Math.max(1, Number(imgW) || 1);
+    var ih = Math.max(1, Number(imgH) || 1);
+    var box = Math.max(1, Number(boxSize) || 1);
+    var cover = Math.max(box / iw, box / ih);
+    var userScale = (Number(scalePct) || 100) / 100;
+    var s = cover * userScale;
+    var w = iw * s;
+    var h = ih * s;
+    var ox = ((Number(posXPct) || 0) / 100) * box;
+    var oy = ((Number(posYPct) || 0) / 100) * box;
+    return {
+      x: (box - w) / 2 + ox,
+      y: (box - h) / 2 + oy,
+      w: w,
+      h: h,
+    };
   }
 
   function parseRadialPosition(position, size) {
@@ -126,7 +157,11 @@
     };
   }
 
-  function buildBackground(settings, size, defs) {
+  function buildBackgroundFill(settings, size, defs) {
+    if (settings.bgType == BgType.IMAGE) {
+      return 'fill="none"';
+    }
+
     if (settings.bgType == BgType.GRADIENT) {
       if (settings.bgGradientType == BgGradientType.RADIAL) {
         var center = parseRadialPosition(settings.bgRadialPosition, size);
@@ -209,6 +244,67 @@
     }
 
     return 'fill="' + escapeXml(settings.bgColor) + '"';
+  }
+
+  /**
+   * SVG image elements need intrinsic pixel size for cover math.
+   * Data URLs from our uploader are PNG; parse IHDR when possible, else assume square.
+   */
+  function guessDataUrlSize(dataUrl) {
+    try {
+      if (!dataUrl || dataUrl.indexOf("data:image/png;base64,") !== 0) {
+        return { w: DESIGN_BASE, h: DESIGN_BASE };
+      }
+      var b64 = dataUrl.slice("data:image/png;base64,".length);
+      var bin = atob(b64.slice(0, 96));
+      // PNG signature (8) + IHDR length(4) + "IHDR"(4) + width(4) + height(4)
+      if (bin.length < 24) {
+        return { w: DESIGN_BASE, h: DESIGN_BASE };
+      }
+      function u32(i) {
+        return (
+          ((bin.charCodeAt(i) << 24) |
+            (bin.charCodeAt(i + 1) << 16) |
+            (bin.charCodeAt(i + 2) << 8) |
+            bin.charCodeAt(i + 3)) >>>
+          0
+        );
+      }
+      return { w: u32(16) || DESIGN_BASE, h: u32(20) || DESIGN_BASE };
+    } catch (e) {
+      return { w: DESIGN_BASE, h: DESIGN_BASE };
+    }
+  }
+
+  function buildImageElement(dataUrl, size, scalePct, posXPct, posYPct, opacityPct) {
+    if (!dataUrl) {
+      return "";
+    }
+    var dims = guessDataUrlSize(dataUrl);
+    var rect = computeImageDrawRect(
+      dims.w,
+      dims.h,
+      size,
+      scalePct,
+      posXPct,
+      posYPct
+    );
+    var opacity = Math.max(0, Math.min(1, (Number(opacityPct) || 100) / 100));
+    return (
+      '<image href="' +
+      escapeXml(dataUrl) +
+      '" x="' +
+      rect.x +
+      '" y="' +
+      rect.y +
+      '" width="' +
+      rect.w +
+      '" height="' +
+      rect.h +
+      '" opacity="' +
+      opacity +
+      '" preserveAspectRatio="none"/>'
+    );
   }
 
   function buildIconGlyph(settings, size, scale) {
@@ -331,7 +427,7 @@
     var borderLive = normalized.border == Border.ENABLED;
     var borderW = borderLive ? normalized.borderWidth * scale : 0;
     var defs = [];
-    var fillAttr = buildBackground(normalized, size, defs);
+    var fillAttr = buildBackgroundFill(normalized, size, defs);
     var clipId = "fc-clip";
 
     defs.push(
@@ -351,6 +447,7 @@
     var styleBlock = "";
     if (
       normalized.fontType != FontType.FONT_AWESOME &&
+      normalized.fontType != FontType.IMAGE &&
       normalized.fontFamily
     ) {
       styleBlock =
@@ -359,10 +456,33 @@
         "');</style>";
     }
 
-    var glyph =
-      normalized.fontType == FontType.FONT_AWESOME
-        ? buildIconGlyph(normalized, size, scale)
-        : buildTextGlyph(normalized, size, scale);
+    var bgImageMarkup = "";
+    if (normalized.bgType == BgType.IMAGE) {
+      bgImageMarkup = buildImageElement(
+        normalized.bgImage,
+        size,
+        normalized.bgImageScale,
+        normalized.bgImagePosX,
+        normalized.bgImagePosY,
+        normalized.bgImageOpacity
+      );
+    }
+
+    var glyph = "";
+    if (normalized.fontType == FontType.IMAGE) {
+      glyph = buildImageElement(
+        normalized.visualImage,
+        size,
+        normalized.visualImageScale,
+        normalized.visualImagePosX,
+        normalized.visualImagePosY,
+        normalized.visualImageOpacity
+      );
+    } else if (normalized.fontType == FontType.FONT_AWESOME) {
+      glyph = buildIconGlyph(normalized, size, scale);
+    } else {
+      glyph = buildTextGlyph(normalized, size, scale);
+    }
 
     var body =
       '<g clip-path="url(#' +
@@ -375,6 +495,7 @@
       '" ' +
       fillAttr +
       "/>" +
+      bgImageMarkup +
       glyph +
       "</g>";
 

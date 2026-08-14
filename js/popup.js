@@ -83,40 +83,59 @@ document.addEventListener("DOMContentLoaded", function () {
   /* Favicon Type Nav */
   var fEditType1 = document.getElementById("favicon_edit_type1");
   var fEditType2 = document.getElementById("favicon_edit_type2");
+  var fEditType3 = document.getElementById("favicon_edit_type3");
   var fEditType1Container = document.getElementById("favicon_edit_type_text");
   var fEditType2Container = document.getElementById(
     "favicon_edit_type_fontawesome",
   );
+  var fEditType3Container = document.getElementById("favicon_edit_type_image");
+  var fEditGlyphControls = document.getElementById(
+    "favicon_edit_glyph_controls",
+  );
 
-  fEditType1.addEventListener("click", function () {
-    fEditType1Container.style.display = "block";
-    fEditType2Container.style.display = "none";
-    chrome.storage.local.set({ fontType: FontType.TEXT });
-
+  function setTextStyleItemsDisabled(disabled) {
     var textStyleItems = document.querySelectorAll(
       ".favicon_edit_text_style_item",
     );
     for (var i = 0; i < textStyleItems.length; i++) {
-      textStyleItems[i].classList.remove(
+      textStyleItems[i].classList.toggle(
         "favicon_edit_text_style_item_disabled",
+        disabled,
       );
     }
+  }
 
+  function setVisualTypeUi(fontType) {
+    var isText = fontType == FontType.TEXT;
+    var isFa = fontType == FontType.FONT_AWESOME;
+    var isImage = fontType == FontType.IMAGE;
+
+    fEditType1.checked = isText;
+    fEditType2.checked = isFa;
+    fEditType3.checked = isImage;
+
+    fEditType1Container.style.display = isText ? "block" : "none";
+    fEditType2Container.style.display = isFa ? "block" : "none";
+    fEditType3Container.style.display = isImage ? "block" : "none";
+    fEditGlyphControls.style.display = isImage ? "none" : "block";
+    setTextStyleItemsDisabled(isFa || isImage);
+  }
+
+  fEditType1.addEventListener("click", function () {
+    setVisualTypeUi(FontType.TEXT);
+    chrome.storage.local.set({ fontType: FontType.TEXT });
     getFavicon();
   });
 
   fEditType2.addEventListener("click", function () {
-    fEditType2Container.style.display = "block";
-    fEditType1Container.style.display = "none";
+    setVisualTypeUi(FontType.FONT_AWESOME);
     chrome.storage.local.set({ fontType: FontType.FONT_AWESOME });
+    getFavicon();
+  });
 
-    var textStyleItems = document.querySelectorAll(
-      ".favicon_edit_text_style_item",
-    );
-    for (var i = 0; i < textStyleItems.length; i++) {
-      textStyleItems[i].classList.add("favicon_edit_text_style_item_disabled");
-    }
-
+  fEditType3.addEventListener("click", function () {
+    setVisualTypeUi(FontType.IMAGE);
+    chrome.storage.local.set({ fontType: FontType.IMAGE });
     getFavicon();
   });
 
@@ -129,11 +148,20 @@ document.addEventListener("DOMContentLoaded", function () {
   var fBackgroundType2 = document.getElementById(
     "favicon_edit_background_type_gradient",
   );
+  var fBackgroundType3 = document.getElementById(
+    "favicon_edit_background_type_image",
+  );
+  var fBackgroundColorRow = document.getElementById(
+    "favicon_edit_background_color_row",
+  );
   var fBackgroundType2Container1 = document.getElementById(
     "favicon_edit_background_type_gradient_container",
   );
   var fBackgroundType2Container2 = document.getElementById(
     "favicon_edit_background_type_gradient_container2",
+  );
+  var fBackgroundType3Container = document.getElementById(
+    "favicon_edit_background_type_image_container",
   );
   var fGradientTypeLinear = document.getElementById(
     "favicon_edit_background_type_gradient_type_linear",
@@ -178,30 +206,40 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  function setBackgroundTypeUi(bgType) {
+    var isSolid = bgType == BgType.SOLID;
+    var isGradient = bgType == BgType.GRADIENT;
+    var isImage = bgType == BgType.IMAGE;
+
+    fBackgroundType1.checked = isSolid;
+    fBackgroundType2.checked = isGradient;
+    fBackgroundType3.checked = isImage;
+
+    fBackgroundColorRow.style.display = isImage ? "none" : "block";
+    fBackgroundType2Container1.style.display = isGradient ? "block" : "none";
+    fBackgroundType2Container2.style.display = isGradient ? "block" : "none";
+    fBackgroundType3Container.style.display = isImage ? "block" : "none";
+
+    if (isGradient) {
+      updateGradientTypeUi();
+    }
+  }
+
   fBackgroundType1.addEventListener("click", function () {
-    fBackgroundType2Container1.style.display = "none";
-    fBackgroundType2Container2.style.display = "none";
+    setBackgroundTypeUi(BgType.SOLID);
     chrome.storage.local.set({ bgType: BgType.SOLID });
-
-    /*var textStyleItems = document.querySelectorAll(".favicon_edit_text_style_item");
-        for(var i = 0; i < textStyleItems.length; i++){
-            textStyleItems[i].classList.remove("favicon_edit_text_style_item_disabled");
-        }*/
-
     getFavicon();
   });
 
   fBackgroundType2.addEventListener("click", function () {
-    fBackgroundType2Container1.style.display = "block";
-    fBackgroundType2Container2.style.display = "block";
+    setBackgroundTypeUi(BgType.GRADIENT);
     chrome.storage.local.set({ bgType: BgType.GRADIENT });
-    updateGradientTypeUi();
+    getFavicon();
+  });
 
-    /*var textStyleItems = document.querySelectorAll(".favicon_edit_text_style_item");
-        for(var i = 0; i < textStyleItems.length; i++){
-            textStyleItems[i].classList.add("favicon_edit_text_style_item_disabled");
-        }*/
-
+  fBackgroundType3.addEventListener("click", function () {
+    setBackgroundTypeUi(BgType.IMAGE);
+    chrome.storage.local.set({ bgType: BgType.IMAGE });
     getFavicon();
   });
 
@@ -548,6 +586,183 @@ document.addEventListener("DOMContentLoaded", function () {
     getFavicon();
   }
 
+  /* Image uploads + transforms */
+  var fVisualImageInput = document.getElementById("favicon_edit_visual_image");
+  var fVisualImageError = document.getElementById(
+    "favicon_edit_visual_image_error",
+  );
+  var fVisualImageThumb = document.getElementById(
+    "favicon_edit_visual_image_thumb",
+  );
+  var fVisualImageRemove = document.getElementById(
+    "favicon_edit_visual_image_remove",
+  );
+  var fVisualImageScale = document.getElementById(
+    "favicon_edit_visual_image_scale",
+  );
+  var fVisualImageScaleText = document.getElementById(
+    "favicon_edit_visual_image_scale_text",
+  );
+  var fVisualImagePosX = document.getElementById(
+    "favicon_edit_visual_image_pos_x",
+  );
+  var fVisualImagePosXText = document.getElementById(
+    "favicon_edit_visual_image_pos_x_text",
+  );
+  var fVisualImagePosY = document.getElementById(
+    "favicon_edit_visual_image_pos_y",
+  );
+  var fVisualImagePosYText = document.getElementById(
+    "favicon_edit_visual_image_pos_y_text",
+  );
+  var fVisualImageOpacity = document.getElementById(
+    "favicon_edit_visual_image_opacity",
+  );
+  var fVisualImageOpacityText = document.getElementById(
+    "favicon_edit_visual_image_opacity_text",
+  );
+
+  var fBgImageInput = document.getElementById("favicon_edit_bg_image");
+  var fBgImageError = document.getElementById("favicon_edit_bg_image_error");
+  var fBgImageThumb = document.getElementById("favicon_edit_bg_image_thumb");
+  var fBgImageRemove = document.getElementById("favicon_edit_bg_image_remove");
+  var fBgImageScale = document.getElementById("favicon_edit_bg_image_scale");
+  var fBgImageScaleText = document.getElementById(
+    "favicon_edit_bg_image_scale_text",
+  );
+  var fBgImagePosX = document.getElementById("favicon_edit_bg_image_pos_x");
+  var fBgImagePosXText = document.getElementById(
+    "favicon_edit_bg_image_pos_x_text",
+  );
+  var fBgImagePosY = document.getElementById("favicon_edit_bg_image_pos_y");
+  var fBgImagePosYText = document.getElementById(
+    "favicon_edit_bg_image_pos_y_text",
+  );
+  var fBgImageOpacity = document.getElementById(
+    "favicon_edit_bg_image_opacity",
+  );
+  var fBgImageOpacityText = document.getElementById(
+    "favicon_edit_bg_image_opacity_text",
+  );
+
+  function setImageError(el, message) {
+    if (!el) {
+      return;
+    }
+    if (message) {
+      el.hidden = false;
+      el.textContent = message;
+    } else {
+      el.hidden = true;
+      el.textContent = "";
+    }
+  }
+
+  function setImageThumb(thumbEl, dataUrl) {
+    if (!thumbEl) {
+      return;
+    }
+    thumbEl.innerHTML = "";
+    if (!dataUrl) {
+      thumbEl.classList.remove("favicon_edit_image_thumb_filled");
+      return;
+    }
+    var img = document.createElement("img");
+    img.alt = "";
+    img.src = dataUrl;
+    thumbEl.appendChild(img);
+    thumbEl.classList.add("favicon_edit_image_thumb_filled");
+  }
+
+  function bindImageUpload(inputEl, errorEl, storageKey) {
+    inputEl.addEventListener("change", function () {
+      var file = inputEl.files && inputEl.files[0];
+      setImageError(errorEl, "");
+      if (!file) {
+        return;
+      }
+      FaviconImageUpload.fileToNormalizedDataUrl(file)
+        .then(function (dataUrl) {
+          var payload = {};
+          payload[storageKey] = dataUrl;
+          chrome.storage.local.set(payload);
+          inputEl.value = "";
+          getFavicon();
+        })
+        .catch(function (err) {
+          setImageError(
+            errorEl,
+            (err && err.message) || "Could not use that image.",
+          );
+          inputEl.value = "";
+        });
+    });
+  }
+
+  function bindImageRemove(buttonEl, inputEl, errorEl, storageKey) {
+    buttonEl.addEventListener("click", function () {
+      var payload = {};
+      payload[storageKey] = "";
+      chrome.storage.local.set(payload);
+      setImageError(errorEl, "");
+      if (inputEl) {
+        inputEl.value = "";
+      }
+      getFavicon();
+    });
+  }
+
+  function bindImageRange(inputEl, textEl, storageKey, suffix) {
+    inputEl.addEventListener("input", function () {
+      var value = inputEl.value;
+      textEl.innerHTML = "(" + value + suffix + ")";
+      var payload = {};
+      payload[storageKey] = value;
+      chrome.storage.local.set(payload);
+      getFavicon();
+    });
+  }
+
+  bindImageUpload(fVisualImageInput, fVisualImageError, "visualImage");
+  bindImageRemove(
+    fVisualImageRemove,
+    fVisualImageInput,
+    fVisualImageError,
+    "visualImage",
+  );
+  bindImageRange(
+    fVisualImageScale,
+    fVisualImageScaleText,
+    "visualImageScale",
+    "%",
+  );
+  bindImageRange(
+    fVisualImagePosX,
+    fVisualImagePosXText,
+    "visualImagePosX",
+    "%",
+  );
+  bindImageRange(
+    fVisualImagePosY,
+    fVisualImagePosYText,
+    "visualImagePosY",
+    "%",
+  );
+  bindImageRange(
+    fVisualImageOpacity,
+    fVisualImageOpacityText,
+    "visualImageOpacity",
+    "%",
+  );
+
+  bindImageUpload(fBgImageInput, fBgImageError, "bgImage");
+  bindImageRemove(fBgImageRemove, fBgImageInput, fBgImageError, "bgImage");
+  bindImageRange(fBgImageScale, fBgImageScaleText, "bgImageScale", "%");
+  bindImageRange(fBgImagePosX, fBgImagePosXText, "bgImagePosX", "%");
+  bindImageRange(fBgImagePosY, fBgImagePosYText, "bgImagePosY", "%");
+  bindImageRange(fBgImageOpacity, fBgImageOpacityText, "bgImageOpacity", "%");
+  /* End image uploads + transforms */
+
   function getFavicon() {
     // Have to declare this here as well? Not sure why?
     //Is it because its declared and not visible if FontAwesome is displayed first
@@ -618,18 +833,10 @@ document.addEventListener("DOMContentLoaded", function () {
         fEditTextValue = settings.text;
         fEditText.value = fEditTextValue;
 
-        if (settings.fontType == FontType.FONT_AWESOME) {
-          var textStyleItems = document.querySelectorAll(
-            ".favicon_edit_text_style_item",
-          );
-          for (var i = 0; i < textStyleItems.length; i++) {
-            textStyleItems[i].classList.add(
-              "favicon_edit_text_style_item_disabled",
-            );
-          }
-          fEditType1Container.style.display = "none";
-          fEditType2Container.style.display = "block";
-          fEditType2.checked = true;
+        if (settings.fontType == FontType.IMAGE) {
+          setVisualTypeUi(FontType.IMAGE);
+        } else if (settings.fontType == FontType.FONT_AWESOME) {
+          setVisualTypeUi(FontType.FONT_AWESOME);
           fontAwesomeButton.innerHTML =
             '<i class="fa ' +
             settings.fontAwesome +
@@ -637,18 +844,20 @@ document.addEventListener("DOMContentLoaded", function () {
             formatFontAwesomeLabel(settings.fontAwesome) +
             " <i class='fa fa-caret-down'></i>";
         } else {
-          var textStyleItemsEnabled = document.querySelectorAll(
-            ".favicon_edit_text_style_item",
-          );
-          for (var j = 0; j < textStyleItemsEnabled.length; j++) {
-            textStyleItemsEnabled[j].classList.remove(
-              "favicon_edit_text_style_item_disabled",
-            );
-          }
-          fEditType1Container.style.display = "block";
-          fEditType2Container.style.display = "none";
-          fEditType1.checked = true;
+          setVisualTypeUi(FontType.TEXT);
         }
+
+        setImageThumb(fVisualImageThumb, settings.visualImage);
+        fVisualImageScale.value = settings.visualImageScale;
+        fVisualImageScaleText.innerHTML =
+          "(" + settings.visualImageScale + "%)";
+        fVisualImagePosX.value = settings.visualImagePosX;
+        fVisualImagePosXText.innerHTML = "(" + settings.visualImagePosX + "%)";
+        fVisualImagePosY.value = settings.visualImagePosY;
+        fVisualImagePosYText.innerHTML = "(" + settings.visualImagePosY + "%)";
+        fVisualImageOpacity.value = settings.visualImageOpacity;
+        fVisualImageOpacityText.innerHTML =
+          "(" + settings.visualImageOpacity + "%)";
 
         fEditBgColorValue = settings.bgColor;
         fEditBgColor.value = fEditBgColorValue;
@@ -661,16 +870,17 @@ document.addEventListener("DOMContentLoaded", function () {
         fEditBgRadialShapeValue = settings.bgRadialShape;
         fEditBgRadialPositionValue = settings.bgRadialPosition;
 
-        if (settings.bgType == BgType.GRADIENT) {
-          fBackgroundType2Container1.style.display = "block";
-          fBackgroundType2Container2.style.display = "block";
-          fBackgroundType2.checked = true;
-          updateGradientTypeUi();
-        } else {
-          fBackgroundType2Container1.style.display = "none";
-          fBackgroundType2Container2.style.display = "none";
-          fBackgroundType1.checked = true;
-        }
+        setBackgroundTypeUi(settings.bgType);
+
+        setImageThumb(fBgImageThumb, settings.bgImage);
+        fBgImageScale.value = settings.bgImageScale;
+        fBgImageScaleText.innerHTML = "(" + settings.bgImageScale + "%)";
+        fBgImagePosX.value = settings.bgImagePosX;
+        fBgImagePosXText.innerHTML = "(" + settings.bgImagePosX + "%)";
+        fBgImagePosY.value = settings.bgImagePosY;
+        fBgImagePosYText.innerHTML = "(" + settings.bgImagePosY + "%)";
+        fBgImageOpacity.value = settings.bgImageOpacity;
+        fBgImageOpacityText.innerHTML = "(" + settings.bgImageOpacity + "%)";
 
         fEditBorderRadiusValue = settings.borderRadius;
         fEditBorderRadius.value = fEditBorderRadiusValue;

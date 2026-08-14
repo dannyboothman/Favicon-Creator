@@ -5,6 +5,9 @@ document.addEventListener("DOMContentLoaded", function () {
   var historyEmptyEl = document.getElementById("favicon_history_empty");
 
   function historyLabel(settings) {
+    if (settings.fontType == FontType.IMAGE) {
+      return "Image";
+    }
     if (settings.fontType == FontType.FONT_AWESOME) {
       return (settings.fontAwesome || "fa-thumbs-up").replace(/^fa-/, "");
     }
@@ -28,7 +31,11 @@ document.addEventListener("DOMContentLoaded", function () {
     var families = {};
     history.forEach(function (entry) {
       var settings = entry && entry.settings;
-      if (!settings || settings.fontType == FontType.FONT_AWESOME) {
+      if (
+        !settings ||
+        settings.fontType == FontType.FONT_AWESOME ||
+        settings.fontType == FontType.IMAGE
+      ) {
         return;
       }
       var family = settings.fontFamily || "Montserrat";
