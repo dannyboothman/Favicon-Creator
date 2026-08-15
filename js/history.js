@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   var FontType = FaviconSettings.FontType;
-  var HISTORY_KEY = "faviconHistory";
+  var HISTORY_KEY = FaviconStorage.HISTORY_KEY;
   var historyListEl = document.getElementById("favicon_history_list");
   var historyEmptyEl = document.getElementById("favicon_history_empty");
 
@@ -89,8 +89,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!entry || !entry.settings) {
       return;
     }
-    chrome.storage.local.set(
-      FaviconDesign.pickDesignPayload(entry.settings),
+    FaviconStorage.set(FaviconDesign.pickDesignPayload(entry.settings)).then(
       function () {
         location.href = "popup.html";
       }
@@ -107,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       var payload = {};
       payload[HISTORY_KEY] = history;
-      chrome.storage.local.set(payload, function () {
+      FaviconStorage.set(payload).then(function () {
         renderFaviconHistory();
       });
     });
@@ -129,7 +128,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (changed) {
       var payload = {};
       payload[HISTORY_KEY] = cleaned;
-      chrome.storage.local.set(payload);
+      FaviconStorage.set(payload);
     }
     return cleaned;
   }

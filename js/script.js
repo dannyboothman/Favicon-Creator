@@ -14,7 +14,11 @@ document.addEventListener('partialsLoaded', function() {
     fEditTheme.addEventListener("click", function() {
         var next = { light: "dark", dark: "system", system: "light" };
         currentTheme = next[currentTheme] || "light";
-        chrome.storage.local.set({ theme: currentTheme });
+        if (typeof FaviconStorage !== "undefined") {
+            FaviconStorage.set({ theme: currentTheme });
+        } else {
+            chrome.storage.local.set({ theme: currentTheme });
+        }
         applyTheme(currentTheme);
     });
 

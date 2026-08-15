@@ -8,6 +8,7 @@
     <link rel="stylesheet" id="googleFontStylesheet" />
     <link rel="stylesheet" href="css/font-awesome.min.css" />
     <script src="js/partials.js"></script>
+    <script src="js/storage.js"></script>
     <script src="js/settings-enums.js"></script>
     <script src="js/design-settings.js"></script>
     <script src="js/image-upload.js"></script>
@@ -111,7 +112,7 @@
                 class="input_container input_container_50"
                 id="favicon_edit_text_color_container"
               >
-                <label>Text Color</label>
+                <label for="favicon_edit_text_color">Text Color</label>
                 <input
                   type="color"
                   value="#FFFFFF"
@@ -124,37 +125,49 @@
                   <strong>Text Styles</strong>
                 </div>
                 <div class="favicon_edit_text_style_container hide_overflow">
-                  <div
+                  <button
+                    type="button"
                     class="favicon_edit_text_style_item"
                     id="favicon_edit_text_style_item_bold"
+                    aria-pressed="false"
+                    aria-label="Bold"
                   >
                     B
-                  </div>
-                  <div
+                  </button>
+                  <button
+                    type="button"
                     class="favicon_edit_text_style_item"
                     id="favicon_edit_text_style_item_italic"
+                    aria-pressed="false"
+                    aria-label="Italic"
                   >
                     I
-                  </div>
-                  <div
+                  </button>
+                  <button
+                    type="button"
                     class="favicon_edit_text_style_item"
                     id="favicon_edit_text_style_item_underline"
+                    aria-pressed="false"
+                    aria-label="Underline"
                   >
                     U
-                  </div>
-                  <div
+                  </button>
+                  <button
+                    type="button"
                     class="favicon_edit_text_style_item"
                     id="favicon_edit_text_style_item_strike"
+                    aria-pressed="false"
+                    aria-label="Strikethrough"
                   >
                     S
-                  </div>
+                  </button>
                 </div>
               </div>
             </div>
 
             <div class="hide_overflow">
               <div class="input_container">
-                <label
+                <label for="favicon_edit_font_size"
                   >Font Size
                   <span id="favicon_edit_font_size_text">(30px)</span></label
                 >
@@ -172,7 +185,7 @@
           <div id="favicon_edit_type_text">
             <div class="hide_overflow">
               <div class="input_container input_container_50">
-                <label>Text</label>
+                <label for="favicon_edit_text">Text</label>
                 <input type="text" id="favicon_edit_text" />
               </div>
               <div class="input_container input_container_50">
@@ -185,12 +198,22 @@
           </div>
 
           <div id="favicon_edit_type_fontawesome">
-            <label>FontAwesome</label>
-            <div id="favicon_edit_font_awesome_button">
+            <label for="favicon_edit_font_awesome_button">FontAwesome</label>
+            <button
+              type="button"
+              id="favicon_edit_font_awesome_button"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              aria-controls="favicon_edit_font_awesome"
+            >
               Please Select <i class="fa fa-caret-down" aria-hidden="true"></i>
-            </div>
+            </button>
             <div id="favicon_edit_font_awesome_container">
-              <div id="favicon_edit_font_awesome"></div>
+              <ul
+                id="favicon_edit_font_awesome"
+                role="listbox"
+                aria-label="Font Awesome icons"
+              ></ul>
             </div>
           </div>
 
@@ -250,7 +273,7 @@
 
           <div id="favicon_edit_background_color_row" class="hide_overflow">
             <div class="input_container input_container_50">
-              <label>Background Color</label>
+              <label for="favicon_edit_bg_color">Background Color</label>
               <input type="color" value="#FE145B" id="favicon_edit_bg_color" />
             </div>
             <div
@@ -258,7 +281,7 @@
               id="favicon_edit_background_type_gradient_container"
             >
               <div class="input_container">
-                <label>Background Color 2</label>
+                <label for="favicon_edit_bg_color2">Background Color 2</label>
                 <input
                   type="color"
                   value="#FE145B"
@@ -306,7 +329,7 @@
 
               <div class="width_50" id="favicon_edit_linear_degs_container">
                 <div class="input_container">
-                  <label
+                  <label for="favicon_edit_linear_degs"
                     ><span id="favicon_edit_linear_degs_text">90</span
                     >&deg;</label
                   >
@@ -356,7 +379,7 @@
                 </div>
                 <div class="width_50">
                   <div class="input_container">
-                    <label>Position</label>
+                    <label for="favicon_edit_radial_position">Position</label>
                     <select id="favicon_edit_radial_position">
                       <option value="center">Center</option>
                       <option value="top">Top</option>
@@ -391,7 +414,7 @@
           <div class="hide_overflow">
             <div class="width_50">
               <div class="input_container">
-                <label
+                <label for="favicon_edit_border_radius"
                   >Radius
                   <span id="favicon_edit_border_radius_text">(0%)</span></label
                 >
@@ -410,15 +433,22 @@
             <div class="width_50">
               <div class="marginb5"><strong>Border</strong></div>
               <div id="favicon_edit_border">
-                <div id="favicon_edit_border1" class="favicon_edit_border_item">
+                <button
+                  type="button"
+                  id="favicon_edit_border1"
+                  class="favicon_edit_border_item"
+                  aria-pressed="false"
+                >
                   Enabled
-                </div>
-                <div
+                </button>
+                <button
+                  type="button"
                   id="favicon_edit_border2"
                   class="favicon_edit_border_item favicon_edit_border_item_active"
+                  aria-pressed="true"
                 >
                   Disabled
-                </div>
+                </button>
               </div>
             </div>
           </div>
@@ -426,7 +456,7 @@
           <div id="favicon_edit_border_container">
             <div class="hide_overflow">
               <div class="input_container input_container_50">
-                <label>Border Color</label>
+                <label for="favicon_edit_border_color">Border Color</label>
                 <input
                   type="color"
                   value="#000000"
@@ -434,7 +464,7 @@
                 />
               </div>
               <div class="input_container input_container_50">
-                <label
+                <label for="favicon_edit_border_width"
                   >Border Width
                   <span id="favicon_edit_border_width_text">(1px)</span></label
                 >

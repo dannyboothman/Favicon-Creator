@@ -644,6 +644,10 @@ header {
 .favicon_edit_text_style_item {
   float: left;
   margin-right: 5px;
+  padding: 0;
+  font: inherit;
+  appearance: none;
+  -webkit-appearance: none;
   border: 1px solid var(--main-border);
   background-color: var(--light-color);
   color: var(--body-color);
@@ -680,6 +684,13 @@ header {
   background-color: var(--main-color);
   border-color: var(--main-color);
   color: var(--light-color2);
+}
+
+.favicon_edit_text_style_item:focus-visible,
+.favicon_edit_border_item:focus-visible,
+#favicon_edit_font_awesome_button:focus-visible {
+  outline: 2px solid var(--main-color);
+  outline-offset: 1px;
 }
 
 /* Border-radius */
@@ -744,7 +755,8 @@ header {
 }
 
 .favicon_edit_image_dropzone:hover,
-.favicon_edit_image_dropzone:focus-within {
+.favicon_edit_image_dropzone:focus-within,
+.favicon_edit_image_dropzone_drag {
   border-color: var(--main-color);
 }
 
@@ -799,6 +811,11 @@ header {
 }
 
 #favicon_edit_font_awesome_button {
+  font: inherit;
+  color: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
   border: 1px solid var(--main-border);
   border-radius: 4px;
   padding: 0px 10px;
@@ -819,6 +836,9 @@ header {
 
 #favicon_edit_font_awesome {
   width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
   border: 1px solid var(--main-border);
   background-color: var(--light-color);
   border-radius: 4px;
@@ -882,6 +902,10 @@ header {
 .favicon_edit_border_item {
   float: left;
   width: 50%;
+  padding: 0;
+  font: inherit;
+  appearance: none;
+  -webkit-appearance: none;
   text-align: center;
   cursor: pointer;
   border: 1px solid var(--main-border);

@@ -264,6 +264,10 @@
     return new Promise(function (resolve) {
       var img = new Image();
       img.onload = function () {
+        var keys = Object.keys(imageCache);
+        if (keys.length >= 6) {
+          delete imageCache[keys[0]];
+        }
         imageCache[dataUrl] = img;
         resolve(img);
       };

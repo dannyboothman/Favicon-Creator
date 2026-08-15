@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var fEditFileHtml = document.getElementById("download_html");
     var fEditFileReadMe = document.getElementById("download_readme");
     var HISTORY_MAX = 30;
-    var HISTORY_KEY = "faviconHistory";
+    var HISTORY_KEY = FaviconStorage.HISTORY_KEY;
     /* End of Var value set */
 
     function saveFaviconToHistory(result){
@@ -29,23 +29,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 createdAt: Date.now(),
                 settings: settings
             });
-            history = history.slice(0, HISTORY_MAX).map(function(entry){
-                return {
-                    id: entry.id,
-                    createdAt: entry.createdAt,
-                    settings: entry.settings
-                };
-            });
+            history = FaviconStorage.fitHistory(
+                history.slice(0, HISTORY_MAX).map(function(entry){
+                    return {
+                        id: entry.id,
+                        createdAt: entry.createdAt,
+                        settings: entry.settings
+                    };
+                })
+            );
             var payload = {};
             payload[HISTORY_KEY] = history;
-            chrome.storage.local.set(payload);
+            FaviconStorage.set(payload);
         });
     }
 
     function setFileOption(key, checked){
         var payload = {};
         payload[key] = checked ? FileOption.ENABLED : FileOption.DISABLED;
-        chrome.storage.local.set(payload);
+        FaviconStorage.set(payload);
     }
 
     function restoreFileOption(result, key, checkbox, defaultEnabled){
@@ -59,11 +61,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set Local storage for checkboxes
     fEditFileType1.addEventListener("change", fChangeFileType1);
     function fChangeFileType1(){
-        chrome.storage.local.set({fileType: FileType.PNG});
+        FaviconStorage.set({fileType: FileType.PNG});
     }
     fEditFileType2.addEventListener("change", fChangeFileType2);
     function fChangeFileType2(){
-        chrome.storage.local.set({fileType: FileType.JPG});
+        FaviconStorage.set({fileType: FileType.JPG});
     }
 
     function bindPackOption(checkbox, storageKey){
@@ -157,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (fEditFileIco.checked){
             lines.push(
-                '<link rel="icon" href="favicon.ico" sizes="48x48">'
+                '<link rel="icon" href="favicon.ico" sizes="16x16 32x32">'
             );
         }
         if (fEditFileApple.checked){
@@ -507,48 +509,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var sizeCheckboxes = document.querySelectorAll("input[name='download_size']");
     sizeCheckboxes.forEach(function (element)
     {
-        element.addEventListener("click", function ()
+        element.addEventListener("change", function ()
         {
-            for (var i = 0; i < sizeCheckboxes.length; i++){
-                var sizeCheckboxId = sizeCheckboxes[i].getAttribute("id");
-                if (sizeCheckboxes[i].checked){
-                    switch(sizeCheckboxId){
-                        case "download_size1":
-                            chrome.storage.local.set({"download_size1": true});
-                            break;
-                        case "download_size2":
-                            chrome.storage.local.set({"download_size2": true});
-                            break;
-                        case "download_size3":
-                            chrome.storage.local.set({"download_size3": true});
-                            break;
-                        case "download_size4":
-                            chrome.storage.local.set({"download_size4": true});
-                            break;
-                        case "download_size5":
-                            chrome.storage.local.set({"download_size5": true});
-                            break;
-                    }
-                } else {
-                    switch(sizeCheckboxId){
-                        case "download_size1":
-                            chrome.storage.local.set({"download_size1": false});
-                            break;
-                        case "download_size2":
-                            chrome.storage.local.set({"download_size2": false});
-                            break;
-                        case "download_size3":
-                            chrome.storage.local.set({"download_size3": false});
-                            break;
-                        case "download_size4":
-                            chrome.storage.local.set({"download_size4": false});
-                            break;
-                        case "download_size5":
-                            chrome.storage.local.set({"download_size5": false});
-                            break;
-                    }
-                }
-            }
+            var payload = {};
+            payload[element.id] = element.checked;
+            FaviconStorage.set(payload);
             updateDownloadAvailability();
         });
     });
