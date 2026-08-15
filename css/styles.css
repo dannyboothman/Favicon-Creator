@@ -192,6 +192,10 @@ textarea {
   --nav-bg: #eaeaea;
   --nav-color: #090a0b;
   --light-color2: #fff;
+  --checker-light: #ffffff;
+  --checker-dark: #cfcfcf;
+  --checker-label-bg: rgba(255, 255, 255, 0.78);
+  --checker-label-color: #333;
 }
 
 [data-theme="dark"] {
@@ -204,6 +208,10 @@ textarea {
   --nav-bg: #090a0b;
   --nav-color: #fff;
   --light-color2: #fff;
+  --checker-light: #3a3a3a;
+  --checker-dark: #1c1c1c;
+  --checker-label-bg: rgba(0, 0, 0, 0.65);
+  --checker-label-color: #fff;
 }
 
 html {
@@ -698,48 +706,97 @@ header {
   margin: 6px 0 0 0;
 }
 
-.favicon_edit_image_preview_row {
+.favicon_edit_image_dropzone_wrap {
+  position: relative;
   margin-top: 10px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
-.favicon_edit_image_thumb {
-  width: 48px;
-  height: 48px;
-  border: 1px solid var(--main-border);
-  border-radius: 4px;
-  background: var(--nav-bg);
+.favicon_edit_image_input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
   overflow: hidden;
-  flex-shrink: 0;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }
 
-.favicon_edit_image_thumb img {
+.favicon_edit_image_dropzone {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.favicon_edit_image_remove {
+  height: 96px;
+  box-sizing: border-box;
   border: 1px solid var(--main-border);
-  background: var(--light-color);
-  color: var(--body-color);
   border-radius: 4px;
-  padding: 6px 10px;
+  overflow: hidden;
   cursor: pointer;
-  font: inherit;
+  background-color: var(--checker-light);
+  background-image:
+    linear-gradient(45deg, var(--checker-dark) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--checker-dark) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--checker-dark) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--checker-dark) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
 }
 
-.favicon_edit_image_remove:hover {
+.favicon_edit_image_dropzone:hover,
+.favicon_edit_image_dropzone:focus-within {
   border-color: var(--main-color);
 }
 
-.input_container input[type="file"] {
-  height: auto;
-  line-height: normal;
-  padding: 4px;
+.favicon_edit_image_dropzone_preview {
+  position: absolute;
+  inset: 0;
+  display: none;
+}
+
+.favicon_edit_image_dropzone_preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.favicon_edit_image_dropzone_label {
+  position: relative;
+  z-index: 1;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--checker-label-bg);
+  color: var(--checker-label-color);
+  font-weight: bold;
+  font-size: 13px;
+  text-align: center;
+}
+
+.favicon_edit_image_dropzone_filled .favicon_edit_image_dropzone_preview {
+  display: block;
+}
+
+.favicon_edit_image_dropzone_filled .favicon_edit_image_dropzone_label {
+  display: none;
+}
+
+.favicon_edit_image_remove {
+  display: none;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 2;
+  margin: 0;
+}
+
+.favicon_edit_image_dropzone_filled ~ .favicon_edit_image_remove {
+  display: block;
+}
+
+.favicon_edit_image_options {
+  display: none;
 }
 
 #favicon_edit_font_awesome_button {
@@ -965,6 +1022,10 @@ header {
   border-color: var(--main-border);
   background: var(--nav-bg);
   color: var(--body-color);
+}
+
+.favicon_history_delete.favicon_edit_image_remove {
+  background: var(--light-color);
 }
 
 .favicon_history_delete:hover {

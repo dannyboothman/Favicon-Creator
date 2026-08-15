@@ -662,16 +662,34 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!thumbEl) {
       return;
     }
+    var dropzone = thumbEl.closest
+      ? thumbEl.closest(".favicon_edit_image_dropzone")
+      : thumbEl.parentNode;
+    var wrap = dropzone && dropzone.parentNode;
+    var options =
+      wrap && wrap.parentNode
+        ? wrap.parentNode.querySelector(".favicon_edit_image_options")
+        : null;
     thumbEl.innerHTML = "";
     if (!dataUrl) {
-      thumbEl.classList.remove("favicon_edit_image_thumb_filled");
+      if (dropzone && dropzone.classList) {
+        dropzone.classList.remove("favicon_edit_image_dropzone_filled");
+      }
+      if (options) {
+        options.style.display = "none";
+      }
       return;
     }
     var img = document.createElement("img");
     img.alt = "";
     img.src = dataUrl;
     thumbEl.appendChild(img);
-    thumbEl.classList.add("favicon_edit_image_thumb_filled");
+    if (dropzone && dropzone.classList) {
+      dropzone.classList.add("favicon_edit_image_dropzone_filled");
+    }
+    if (options) {
+      options.style.display = "block";
+    }
   }
 
   function bindImageUpload(inputEl, errorEl, storageKey) {
