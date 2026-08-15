@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("partialsLoaded", function () {
   var FontType = FaviconSettings.FontType;
   var BgType = FaviconSettings.BgType;
   var BgGradientType = FaviconSettings.BgGradientType;
@@ -92,17 +92,14 @@ document.addEventListener("DOMContentLoaded", function () {
   var fEditGlyphControls = document.getElementById(
     "favicon_edit_glyph_controls",
   );
+  var fEditTextColorContainer = document.getElementById(
+    "favicon_edit_text_color_container",
+  );
+  var fEditTextStyles = document.getElementById("favicon_edit_text_styles");
 
-  function setTextStyleItemsDisabled(disabled) {
-    var textStyleItems = document.querySelectorAll(
-      ".favicon_edit_text_style_item",
-    );
-    for (var i = 0; i < textStyleItems.length; i++) {
-      textStyleItems[i].classList.toggle(
-        "favicon_edit_text_style_item_disabled",
-        disabled,
-      );
-    }
+  function setTextStylesHidden(hidden) {
+    fEditTextStyles.style.display = hidden ? "none" : "block";
+    fEditTextColorContainer.classList.toggle("input_container_50", !hidden);
   }
 
   function setVisualTypeUi(fontType) {
@@ -118,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fEditType2Container.style.display = isFa ? "block" : "none";
     fEditType3Container.style.display = isImage ? "block" : "none";
     fEditGlyphControls.style.display = isImage ? "none" : "block";
-    setTextStyleItemsDisabled(isFa || isImage);
+    setTextStylesHidden(isFa || isImage);
   }
 
   fEditType1.addEventListener("click", function () {

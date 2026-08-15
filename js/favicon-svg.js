@@ -344,6 +344,61 @@
     );
   }
 
+  /**
+   * Offset from the icon center to an alphabetic, middle-anchored origin
+   * so the glyph ink box is centered. `dominant-baseline` is ignored by many
+   * SVG viewers (and by <img> favicons), so it cannot be used for this.
+   */
+  function measureTextInk(settings, fontSize, text) {
+    var fallback = {
+      originX: 0,
+      originY: fontSize * 0.37,
+      width: Math.max(fontSize * 0.55 * Math.max(text.length, 1), fontSize * 0.4),
+      ascent: fontSize * 0.74,
+      descent: fontSize * 0.02,
+    };
+    try {
+      if (typeof document === "undefined" || !document.createElement) {
+        return fallback;
+      }
+      var canvas = document.createElement("canvas");
+      var ctx = canvas.getContext("2d");
+      if (!ctx || !ctx.measureText) {
+        return fallback;
+      }
+      var weight = settings.textStyle1 ? "700" : "400";
+      var style = settings.textStyle2 ? "italic" : "normal";
+      var family = settings.fontFamily || "Montserrat";
+      ctx.font =
+        style + " " + weight + " " + fontSize + 'px "' + family + '", sans-serif';
+      ctx.textAlign = "center";
+      ctx.textBaseline = "alphabetic";
+      var m = ctx.measureText(text);
+      var left = m.actualBoundingBoxLeft;
+      var right = m.actualBoundingBoxRight;
+      var ascent = m.actualBoundingBoxAscent;
+      var descent = m.actualBoundingBoxDescent;
+      var layout = {
+        originX: 0,
+        originY: fallback.originY,
+        width: m.width || fallback.width,
+        ascent: fallback.ascent,
+        descent: fallback.descent,
+      };
+      if (ascent != null && descent != null && ascent + descent > 0) {
+        layout.originY = (ascent - descent) / 2;
+        layout.ascent = ascent;
+        layout.descent = descent;
+      }
+      if (left != null && right != null && left + right > 0) {
+        layout.originX = (left - right) / 2;
+      }
+      return layout;
+    } catch (e) {
+      return fallback;
+    }
+  }
+
   function buildTextGlyph(settings, size, scale) {
     var fontSize = settings.fontSize * scale;
     var weight = settings.textStyle1 ? "700" : "400";
@@ -352,13 +407,16 @@
     var text = String(settings.text == null ? "" : settings.text);
     var cx = size / 2;
     var cy = size / 2;
+    var ink = measureTextInk(settings, fontSize, text);
+    var x = cx + ink.originX;
+    var y = cy + ink.originY;
     var parts = [];
     parts.push(
       '<text x="' +
-        cx +
+        x +
         '" y="' +
-        cy +
-        '" text-anchor="middle" dominant-baseline="central" fill="' +
+        y +
+        '" text-anchor="middle" fill="' +
         escapeXml(settings.textColor) +
         '" font-family="' +
         escapeXml(family) +
@@ -374,13 +432,12 @@
     );
 
     if (settings.textStyle3 || settings.textStyle4) {
-      // Approximate text width for decoration lines (no canvas metrics in SVG builder).
-      var approxWidth = Math.max(fontSize * 0.55 * Math.max(text.length, 1), fontSize * 0.4);
-      var x0 = cx - approxWidth / 2;
-      var x1 = cx + approxWidth / 2;
+      var lineWidth = ink.width || Math.max(fontSize * 0.4, 1);
+      var x0 = cx - lineWidth / 2;
+      var x1 = cx + lineWidth / 2;
       var strokeW = Math.max(1, Math.round(fontSize * 0.06));
       if (settings.textStyle3) {
-        var uy = cy + fontSize * 0.35;
+        var uy = y + Math.max(ink.descent * 0.25, fontSize * 0.08);
         parts.push(
           '<line x1="' +
             x0 +

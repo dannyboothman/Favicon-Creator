@@ -431,6 +431,12 @@ header {
   width: 100%;
 }
 
+#favicon_edit_container1,
+#favicon_edit_container2,
+#favicon_edit_container3 {
+  padding-top: 8px;
+}
+
 .favicon_tab {
   flex: 1 1 0;
   min-width: 0;
@@ -674,13 +680,6 @@ header {
   background-color: var(--main-color);
   border-color: var(--main-color);
   color: var(--light-color2);
-}
-
-.favicon_edit_text_style_item_disabled {
-  background-color: var(--main-border);
-  border-color: var(--main-border);
-  color: var(--body-color);
-  pointer-events: none;
 }
 
 /* Border-radius */

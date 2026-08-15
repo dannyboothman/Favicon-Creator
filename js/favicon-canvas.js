@@ -393,6 +393,30 @@
       });
   }
 
+  function measureTextInk(ctx, text, fontSize) {
+    var metrics = ctx.measureText(text);
+    var left = metrics.actualBoundingBoxLeft;
+    var right = metrics.actualBoundingBoxRight;
+    var ascent = metrics.actualBoundingBoxAscent;
+    var descent = metrics.actualBoundingBoxDescent;
+    var layout = {
+      originX: 0,
+      originY: fontSize * 0.37,
+      width: metrics.width || Math.max(fontSize * 0.4, 1),
+      ascent: fontSize * 0.74,
+      descent: fontSize * 0.02,
+    };
+    if (ascent != null && descent != null && ascent + descent > 0) {
+      layout.originY = (ascent - descent) / 2;
+      layout.ascent = ascent;
+      layout.descent = descent;
+    }
+    if (left != null && right != null && left + right > 0) {
+      layout.originX = (left - right) / 2;
+    }
+    return layout;
+  }
+
   function drawTextGlyph(ctx, settings, size, scale) {
     var fontSize = settings.fontSize * scale;
     if (size <= 32) {
@@ -403,27 +427,25 @@
     var family = settings.fontFamily || "Montserrat";
     ctx.fillStyle = settings.textColor;
     ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
+    ctx.textBaseline = "alphabetic";
     ctx.font = style + " " + weight + " " + fontSize + 'px "' + family + '"';
     var text = String(settings.text == null ? "" : settings.text);
     var cx = size / 2;
     var cy = size / 2;
-    ctx.fillText(text, cx, cy);
+    var ink = measureTextInk(ctx, text, fontSize);
+    var x = cx + ink.originX;
+    var y = cy + ink.originY;
+    ctx.fillText(text, x, y);
 
     if (settings.textStyle3 || settings.textStyle4) {
-      var metrics = ctx.measureText(text);
-      var textWidth = metrics.width;
+      var textWidth = ink.width;
       var x0 = cx - textWidth / 2;
       var x1 = cx + textWidth / 2;
       ctx.strokeStyle = settings.textColor;
       ctx.lineWidth = Math.max(1, Math.round(fontSize * 0.06));
       ctx.beginPath();
       if (settings.textStyle3) {
-        var uy =
-          cy +
-          (metrics.actualBoundingBoxDescent != null
-            ? metrics.actualBoundingBoxDescent * 0.85
-            : fontSize * 0.35);
+        var uy = y + Math.max(ink.descent * 0.25, fontSize * 0.08);
         ctx.moveTo(x0, uy);
         ctx.lineTo(x1, uy);
       }
